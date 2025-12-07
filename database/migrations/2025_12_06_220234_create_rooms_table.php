@@ -40,13 +40,4 @@ return new class extends Migration
             // 論理削除用（deleted_at カラム追加）
             $table->softDeletes()->comment('論理削除用（削除日時）将来用');
         });
-    }
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
-    {
-        Schema::dropIfExists('rooms');
-    }
-};
