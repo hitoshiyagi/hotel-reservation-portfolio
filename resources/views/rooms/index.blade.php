@@ -76,11 +76,15 @@
                 <i class="fas fa-pencil-alt d-block mx-auto mb-1"></i> 編集
             </a>
 
-            {{-- 削除ボタン --}}
-            {{-- 削除フォームは後ほど実装（ここではボタンのみ） --}}
-            <button type="button" class="btn btn-sm text-white" style="background-color: #dc3545; border: none; font-size: 0.9rem;">
-                <i class="fas fa-trash-alt d-block mx-auto mb-1"></i> 削除
-            </button>
+            {{-- 削除ボタン: フォームを使って DELETE リクエストを送信 --}}
+            <form action="{{ route('rooms.destroy', $room->id) }}" method="POST" onsubmit="return confirm('{{ $room->type_name }} を削除してもよろしいですか？');">
+                @csrf
+                @method('DELETE')
+
+                <button type="submit" class="btn btn-sm text-white w-100" style="background-color: #dc3545; border: none; font-size: 0.9rem;">
+                    <i class="fas fa-trash-alt d-block mx-auto mb-1"></i> 削除
+                </button>
+            </form>
         </div>
     </div>
     @empty

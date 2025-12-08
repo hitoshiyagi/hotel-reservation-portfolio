@@ -115,9 +115,23 @@ class RoomController extends Controller
 
 
 
-    public function destroy(Room $room)
+    /**
+     * 特定の部屋タイプをデータベースから削除する (D: Delete - Destroy).
+     * @param  string  $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function destroy(string $id)
     {
-        //
+        // 1. 削除対象の部屋タイプを取得
+        $room = \App\Models\Room::findOrFail($id);
+
+        $typeName = $room->type_name; // メッセージ用に名前を保持
+
+        // 2. 削除を実行 (論理削除が実行される)
+        $room->delete();
+
+        // 3. リダイレクト (一覧ページに戻る)
+        return redirect()->route('rooms.index')->with('success', $typeName . ' が正常に削除されました。');
     }
 }
 
