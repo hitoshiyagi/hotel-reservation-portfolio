@@ -7,9 +7,20 @@ use App\Models\Room;
 
 class RoomController extends Controller
 {
+    /**
+     * 部屋タイプの一覧を表示する (R: Read - Index).
+     * @return \Illuminate\View\View
+     */
     public function index()
     {
-        return view('rooms.index');
+        // 1. データベースからすべての部屋タイプを取得
+        // 最新の登録順に並べるのが一般的です
+        $rooms = Room::orderBy('created_at', 'desc')->get();
+
+        // 2. rooms/index.blade.php にデータを渡して表示
+        return view('rooms.index', [
+            'rooms' => $rooms
+        ]);
     }
 
 
