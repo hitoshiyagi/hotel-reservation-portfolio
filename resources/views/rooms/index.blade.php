@@ -46,9 +46,9 @@
             @else
             {{-- プレースホルダー画像 (和室と特別室の画像URLを仮に使用) --}}
             @if ($room->type_name == '特別室')
-            <img src="https://images.unsplash.com/photo-1709742877524-68adf97ef4a6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxsdXh1cnklMjBqYXBhbmVzZSUyMHJ5b2thbiUyMHJvb218ZW58MXx8fHwxNzY0NzM0NTYwfDA&ixlib=rb-4.1.0&q=80&w=1080" alt="特別室" style="width: 100%; height: 100%; object-fit: cover;">
+            <img src="https://images.unsplash.com/photo-1719710708080-9e8c98fc62c0?q=80&w=2350&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="特別室" style="width: 100%; height: 100%; object-fit: cover;">
             @else
-            <img src="https://images.unsplash.com/photo-1759310707083-997d19da3fe8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHx0cmFkaXRpb25hbCUyMGphcGFuZXNlJTIwcm9vbSUyMHRhdGFtaXxlbnwxfHx8fDE3NjQ3MzQ1NjB8MA&ixlib=rb-4.1.0&q=80&w=1080" alt="和室" style="width: 100%; height: 100%; object-fit: cover;">
+            <img src="https://images.unsplash.com/photo-1719710708080-9e8c98fc62c0?q=80&w=2350&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="和室" style="width: 100%; height: 100%; object-fit: cover;">
             @endif
             @endif
         </div>

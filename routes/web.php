@@ -11,7 +11,9 @@ Route::prefix('rooms')->group(function () {
     Route::get('create', [RoomController::class, 'create'])->name('rooms.create');
     // 作成済み
     Route::post('/', [RoomController::class, 'store'])->name('rooms.store');
-    Route::get('{room}', [RoomController::class, 'show'])->name('rooms.show');
+    // 今回は使う予定なし
+    // Route::get('{room}', [RoomController::class, 'show'])->name('rooms.show');
+    
     Route::get('{room}/edit', [RoomController::class, 'edit'])->name('rooms.edit');
     Route::match(['put', 'patch'], '{room}', [RoomController::class, 'update'])->name('rooms.update');
     Route::delete('{room}', [RoomController::class, 'destroy'])->name('rooms.destroy');
