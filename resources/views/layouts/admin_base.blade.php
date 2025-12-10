@@ -8,7 +8,7 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-
+    
     <style>
         :root {
             --admin-bg-dark: #1c1c24;
@@ -26,7 +26,7 @@
         .admin-header {
             background-color: var(--admin-header-bg);
             border-bottom: 1px solid #3d3d4a;
-            padding: 1rem 0;
+            padding: 1rem 1rem;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
@@ -38,7 +38,7 @@
             line-height: 1.2;
         }
 
-        /* 戻るリンク (上段) */
+        /* 戻るリンク (下段) */
         .header-back-link {
             display: inline-flex;
             align-items: center;
@@ -46,6 +46,7 @@
             text-decoration: none;
             opacity: 0.7;
             font-size: 0.85rem;
+            margin-top: 10px;
             margin-bottom: 3px;
         }
 
@@ -53,7 +54,29 @@
             opacity: 1;
         }
 
-        /* ページタイトル (下段) */
+        .room-card-image {
+            width: 100%;
+            height: 200px;
+        }
+
+        .room-action-area {
+            width: 100%;
+            flex-direction: row;
+            /* モバイルはボタンを横並び */
+            border-top: 1px solid #4a4a58;
+            /* 区切り線 */
+        }
+
+        /* ---------------------------------------------------- */
+        /* ✅ メディアクエリの外に移動: モバイル/PC共通のスタイル */
+        /* ---------------------------------------------------- */
+
+        .card {
+            background-color: var(--admin-header-bg);
+            color: var(--admin-text-light);
+            border: 1px solid #3d3d4a;
+        }
+
         .header-page-title {
             font-size: 1.25rem;
             font-weight: 600;
@@ -65,14 +88,30 @@
             border-color: var(--admin-primary);
         }
 
-        .admin-content {
-            padding: 30px;
-        }
+        /* ---------------------------------------------------- */
+        /* PC・タブレット用（768px以上）のスタイル上書き */
+        /* ---------------------------------------------------- */
+        @media (min-width: 768px) {
+            .room-card-image {
+                width: 200px;
+                /* 固定幅に戻す */
+                height: auto;
+                /* 高さは親に合わせる */
+            }
 
-        .card {
-            background-color: var(--admin-header-bg);
-            color: var(--admin-text-light);
-            border: 1px solid #3d3d4a;
+            .room-action-area {
+                width: 80px;
+                /* 固定幅 */
+                flex-direction: column;
+                /* PCはボタンを縦並び */
+                border-top: none;
+                border-left: 1px solid #4a4a58;
+            }
+
+            /* padding のように PCでのみ適用したいスタイルはここに残す */
+            .admin-content {
+                padding: 30px;
+            }
         }
     </style>
 
@@ -102,7 +141,7 @@
         </nav>
     </header>
 
-    <div class="container-fluid admin-content">
+    <div class="container-fluid admin-content p-4">
 
         @yield('content')
     </div>

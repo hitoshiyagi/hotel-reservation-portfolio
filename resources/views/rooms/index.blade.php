@@ -2,20 +2,14 @@
 
 @section('title', '部屋タイプ管理')
 
-{{-- ヘッダー左側の2段構成を定義 --}}
 @section('page_breadcrumb')
-
-{{-- 上段: ページタイトル --}}
-<span class="header-page-title">部屋タイプ管理</span>
-
-{{-- 下段: 戻るリンク --}}
-
+<span class="header-page-title">部屋タイプ一覧</span>
 <a href="#" class="header-back-link">
     <i class="fas fa-arrow-left me-2"></i> 管理者メニューに戻る
 </a>
 @endsection
 
-{{-- メインコンテンツエリアにコンテンツを挿入 --}}
+
 @section('content')
 
 {{-- 登録成功メッセージの表示 --}}
@@ -26,29 +20,25 @@
 </div>
 @endif
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="fs-5 m-0">部屋タイプ一覧</h2>
-    <a href="{{ route('rooms.create') }}" class="btn btn-primary">
+<div class="d-flex align-items-center">
+    <a href="{{ route('rooms.create') }}" class="btn btn-primary ms-auto">
         <i class="fas fa-plus me-1"></i> 新規追加
     </a>
 </div>
 
-{{-- 部屋タイプカードのループ --}}
 <div>
     @forelse ($rooms as $room)
-    {{-- 部屋タイプ全体を囲むコンテナ --}}
-    <div class="d-flex mb-4 p-0 shadow-lg mx-auto" style="background-color: #2b2b3a; max-width: 880px; border-radius: 8px;">
-        {{-- 1. 画像エリア (幅を固定) --}}
-        <div style="flex-shrink: 0; width: 200px; height: 200px; overflow: hidden; border-radius: 8px 0 0 8px;">
-            {{-- ✅ 修正後: アクセサ ($room->primary_image_url) を使用 --}}
+    <div class="d-flex flex-column flex-md-row m-4 p-0 shadow-lg mx-auto overflow-hidden"
+        style="background-color: #2b2b3a; max-width: 880px; border-radius: 8px;">
+
+        {{-- 1. 画像エリア --}}
+        <div class="room-card-image flex-shrink-0 position-relative" style="background-color: #383845;">
             @if ($room->primary_image_url)
-            {{-- 💡 アクセサがroom_imagesテーブルから取得したURLを返します --}}
             <img src="{{ $room->primary_image_url }}"
                 alt="{{ $room->type_name }}"
                 style="width: 100%; height: 100%; object-fit: cover;">
             @else
-            {{-- 画像がない場合のプレースホルダー（灰色のボックスなど） --}}
-            <div class="d-flex align-items-center justify-content-center h-100" style="background-color: #383845;">
+            <div class="d-flex align-items-center justify-content-center h-100">
                 <i class="fas fa-image fa-3x text-white-50"></i>
             </div>
             @endif
@@ -69,21 +59,31 @@
             </div>
         </div>
 
-        {{-- 3. アクションボタンエリア (縦に並んだ専用エリア) --}}
-        <div class="d-flex flex-column justify-content-center p-2" style="background-color: #383845; border-radius: 0 8px 8px 0; width: 80px;">
+        {{-- 3. アクションボタンエリア --}}
+        <div class="room-action-area d-flex justify-content-center align-items-center p-2 gap-2"
+            style="background-color: #383845; width: 100px; flex-shrink: 0;">
+
 
             {{-- 編集ボタン --}}
-            <a href="{{ route('rooms.edit', $room->id) }}" class="btn btn-sm text-white mb-2" style="background-color: #44445c; border: none; font-size: 0.9rem;">
-                <i class="fas fa-pencil-alt d-block mx-auto mb-1"></i> 編集
+            <a href="{{ route('rooms.edit', $room->id) }}"
+                class="btn btn-sm text-white w-100"
+                style="background-color: #44445c; border: none; font-size: 0.9rem;">
+                <i class="fas fa-pencil-alt mb-1 d-inline-block d-md-block mx-auto"></i>
+                <span class="d-inline d-md-block">編集</span>
             </a>
 
-            {{-- 削除ボタン: フォームを使って DELETE リクエストを送信 --}}
-            <form action="{{ route('rooms.destroy', $room->id) }}" method="POST" onsubmit="return confirm('{{ $room->type_name }} を削除してもよろしいですか？');">
+            {{-- 削除ボタン --}}
+            <form action="{{ route('rooms.destroy', $room->id) }}" method="POST"
+                onsubmit="return confirm('{{ $room->type_name }} を削除してもよろしいですか？');"
+                class="w-100">
                 @csrf
                 @method('DELETE')
 
-                <button type="submit" class="btn btn-sm text-white w-100" style="background-color: #dc3545; border: none; font-size: 0.9rem;">
-                    <i class="fas fa-trash-alt d-block mx-auto mb-1"></i> 削除
+                <button type="submit"
+                    class="btn btn-sm text-white w-100"
+                    style="background-color: #dc3545; border: none; font-size: 0.9rem;">
+                    <i class="fas fa-trash-alt mb-1 d-inline-block d-md-block mx-auto"></i>
+                    <span class="d-inline d-md-block">削除</span>
                 </button>
             </form>
         </div>
@@ -96,5 +96,4 @@
     </div>
     @endforelse
 </div>
-
 @endsection

@@ -1,18 +1,12 @@
-@extends('layouts.admin_base') {{-- 共通の親レイアウトを継承 --}}
+@extends('layouts.admin_base')
 
 @section('title', '新規部屋タイプ追加')
 
-{{-- 1. ヘッダー左側の2段構成を定義 --}}
 @section('page_breadcrumb')
-
-{{-- 上段: ページタイトル--}}
 <span class="header-page-title">新規部屋タイプ追加</span>
-
-{{-- 下段: 戻るリンク --}}
 <a href="{{ route('rooms.index') }}" class="header-back-link">
     <i class="fas fa-arrow-left me-2"></i> 部屋タイプ管理に戻る
 </a>
-
 @endsection
 
 @section('content')
@@ -128,7 +122,7 @@
 
         </div>
 
-        {{-- 💡 画像URLとプレビューのセクション --}}
+        {{-- 画像URLとプレビュー --}}
         <div class="mb-4">
             <label for="image_url" class="form-label">画像URL (1枚目)</label>
             <input type="url"
@@ -169,43 +163,7 @@
 
 @endsection
 
-{{-- 💡 プレビュー用JavaScript --}}
+{{-- プレビュー用JavaScript --}}
 @push('scripts')
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const imageUrlInput = document.getElementById('image_url');
-        const imagePreview = document.getElementById('image_preview');
-        const noImageText = document.getElementById('no_image_text');
-
-        imageUrlInput.addEventListener('input', function() {
-            const url = this.value;
-
-            if (url && url.startsWith('http')) {
-                // 画像をロードしようと試みる
-                imagePreview.src = url;
-                imagePreview.onload = function() {
-                    imagePreview.style.display = 'block';
-                    noImageText.style.display = 'none';
-                };
-                imagePreview.onerror = function() {
-                    // 画像のロードに失敗した場合
-                    imagePreview.style.display = 'none';
-                    noImageText.style.display = 'block';
-                    noImageText.textContent = '画像URLが無効です。';
-                };
-            } else {
-                // URLが空または無効な場合
-                imagePreview.style.display = 'none';
-                imagePreview.src = '';
-                noImageText.style.display = 'block';
-                noImageText.textContent = 'URLを入力するとここに画像が表示されます。';
-            }
-        });
-
-        // ページロード時の初期チェック（old()の値がある場合）
-        if (imageUrlInput.value) {
-            imageUrlInput.dispatchEvent(new Event('input'));
-        }
-    });
-</script>
+<script src="{{ asset('js/image_preview.js') }}"></script>
 @endpush

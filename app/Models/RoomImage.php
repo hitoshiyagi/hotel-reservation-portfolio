@@ -9,13 +9,9 @@ class RoomImage extends Model
 {
     use HasFactory;
 
-    // テーブル名が room_images のため、通常は省略可
-    // protected $table = 'room_images'; 
-
-    // マスアサインメントを許可するカラム
     protected $fillable = [
         'room_id',
-        'image_url', // マイグレーションファイルの 'image_url' に合わせる
+        'image_url',
         'sort_order',
     ];
 
