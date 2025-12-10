@@ -109,31 +109,40 @@
         </div>
 
 
-        {{-- 画像URLの複数入力エリア --}}
         <div class="mb-4 card p-3" style="background-color: #383845; border: 1px solid #4a4a58;">
             <h5 class="mb-3 text-white">客室画像登録 (URL入力)</h5>
 
-            <p class="form-label mb-2 text-white-75">画像URLを入力してください（最大3枚推奨）</p>
+            <p class="form-label mb-2 text-white-75">画像URLを入力してください（最大**5枚**まで）</p>
 
-            @for ($i = 0; $i < 3; $i++) {{-- 💡 $iを0から開始 --}}
-                <div class="mb-3 d-flex align-items-center">
+            @for ($i = 0; $i < 5; $i++)
+                <div class="mb-3 d-flex align-items-center image-url-group"> {{-- ★ image-url-group クラスを追加 --}}
                 <label class="me-2 text-white-50 flex-shrink-0" style="width: 40px;">#{{ $i + 1 }}</label>
-                <input type="url"
-                    class="form-control new-image-url-input me-3"
-                    name="new_image_urls[]"
-                    placeholder="画像URLを入力 (順序 {{ $i + 1 }})"
-                    value="{{ old('new_image_urls.' . $i) }}" {{-- 💡 old()のインデックスも $i --}}
-                    data-preview-id="new_image_preview_{{ $i }}" {{-- 💡 IDのインデックスも $i --}}
-                    style="background-color: #383845; color: var(--admin-text-light); border: 1px solid #4a4a58;">
+
+                {{-- 入力フィールドとクリアボタンのコンテナ --}}
+                <div class="input-group me-3 flex-grow-1">
+                    <input type="url"
+                        class="form-control new-image-url-input"
+                        name="new_image_urls[]"
+                        placeholder="画像URLを入力 (順序 {{ $i + 1 }})"
+                        value="{{ old('new_image_urls.' . $i) }}"
+                        data-preview-id="new_image_preview_{{ $i }}"
+                        style="background-color: #383845; color: var(--admin-text-light); border: 1px solid #4a4a58; border-right: none;">
+
+                    {{-- ★ クリアボタン本体 ★ --}}
+                    <button type="button" class="btn btn-secondary btn-clear-url"
+                        style="background-color: #4a4a58; border: 1px solid #4a4a58; color: white;">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+
                 <img id="new_image_preview_{{ $i }}"
                     src="{{ old('new_image_urls.' . $i) }}"
                     alt="プレビュー"
                     style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px; border: 1px solid #4a4a58; display: {{ old('new_image_urls.' . $i) ? 'block' : 'none' }};">
         </div>
         @endfor
-
         <div class="form-text text-white-50 mt-2">
-            空欄のURLは登録されません。
+            空欄のURLは登録されません。画像は上から順に表示されます。
         </div>
 
         @error('new_image_urls.*')

@@ -29,6 +29,9 @@
                 value="{{ old('type_name', $room->type_name) }}"
                 required
                 style="background-color: #383845; color: var(--admin-text-light); border: 1px solid #4a4a58;">
+            @error('type_name')
+            <div class="text-danger small mt-1">{{ $message }}</div>
+            @enderror
         </div>
 
         {{-- 説明 --}}
@@ -99,24 +102,40 @@
             </div>
         </div>
 
-        {{-- 画像URLとプレビュー --}}
+        {{-- ★★★ 画像URLの複数入力エリア (5枚対応 - クリアボタン追加) ★★★ --}}
         <div class="mb-4 card p-3" style="background-color: #383845; border: 1px solid #4a4a58;">
             <h5 class="mb-3 text-white">客室画像登録/編集 (URL入力)</h5>
-            <p class="form-label mb-2 text-white-75">画像URLを入力してください（最大3枚推奨）</p>
-            @for ($i = 0; $i < 3; $i++)
+            <p class="form-label mb-2 text-white-75">画像URLを入力してください（最大**5枚**まで）</p>
+
+            {{-- 💡 修正: $room->images->values() でコレクションのキーをゼロベースにリセット --}}
+            @php
+            $roomImages = $room->images->values();
+            @endphp
+
+            @for ($i = 0; $i < 5; $i++)
                 @php
-                $existingImageUrl=optional($room->images->get($i))->image_url;
+                // 修正後: $roomImages (キーが連番) から $i 番目の要素を取得
+                $existingImageUrl=optional($roomImages->get($i))->image_url;
                 $currentUrl = old('new_image_urls.' . $i, $existingImageUrl);
                 @endphp
-                <div class="mb-3 d-flex align-items-center">
+
+                <div class="mb-3 d-flex align-items-center image-url-group">
                     <label class="me-2 text-white-50 flex-shrink-0" style="width: 40px;">#{{ $i + 1 }}</label>
-                    <input type="url"
-                        class="form-control new-image-url-input me-3"
-                        name="new_image_urls[]"
-                        placeholder="画像URLを入力 (順序 {{ $i + 1 }})"
-                        value="{{ $currentUrl }}"
-                        data-preview-id="new_image_preview_{{ $i }}"
-                        style="background-color: #383845; color: var(--admin-text-light); border: 1px solid #4a4a58;">
+
+                    <div class="input-group me-3 flex-grow-1">
+                        <input type="url"
+                            class="form-control new-image-url-input"
+                            name="new_image_urls[]"
+                            placeholder="画像URLを入力 (順序 {{ $i + 1 }})"
+                            value="{{ $currentUrl }}"
+                            data-preview-id="new_image_preview_{{ $i }}"
+                            style="background-color: #383845; color: var(--admin-text-light); border: 1px solid #4a4a58; border-right: none;">
+
+                        <button type="button" class="btn btn-secondary btn-clear-url"
+                            style="background-color: #4a4a58; border: 1px solid #4a4a58; color: white;">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
 
                     <img id="new_image_preview_{{ $i }}"
                         src="{{ $currentUrl }}"
@@ -134,20 +153,25 @@
                 @enderror
         </div>
 
+        @error('new_image_urls.*')
+        <div class="text-danger small mt-1">画像URLの形式が無効です。</div>
+        @enderror
+</div>
 
-        <div class="d-flex justify-content-center mt-4">
-            {{-- 更新ボタン --}}
-            <button type="submit" class="btn btn-primary btn-lg me-3" style="width: 200px;"> {{-- me-3で右にマージン --}}
-                更新
-            </button>
 
-            {{-- キャンセルボタン --}}
-            <a href="{{ route('rooms.index') }}" class="btn btn-secondary btn-lg" style="width: 200px;">
-                キャンセル
-            </a>
+<div class="d-flex justify-content-center mt-4">
+    {{-- 更新ボタン --}}
+    <button type="submit" class="btn btn-primary btn-lg me-3" style="width: 200px;">
+        更新
+    </button>
 
-        </div>
-    </form>
+    {{-- キャンセルボタン --}}
+    <a href="{{ route('rooms.index') }}" class="btn btn-secondary btn-lg" style="width: 200px;">
+        キャンセル
+    </a>
+
+</div>
+</form>
 </div>
 
 @endsection

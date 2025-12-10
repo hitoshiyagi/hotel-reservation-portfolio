@@ -53,8 +53,8 @@ class RoomController extends Controller
             'capacity'    => 'required|integer|min:1|max:4',
             'total_rooms' => 'required|integer|min:1|max:5',
 
-            // ★★★ 複数画像URLに対応したバリデーション (maxを3に修正) ★★★
-            'new_image_urls' => 'nullable|array|max:3', // 💡 修正
+            // 複数画像URLに対応したバリデーション(最大5枚)
+            'new_image_urls' => 'nullable|array|max:5',
             'new_image_urls.*' => 'nullable|url|max:2048',
         ]);
 
@@ -112,7 +112,7 @@ class RoomController extends Controller
             'total_rooms' => 'required|integer|min:1|max:5',
 
             // 複数画像URLに対応したバリデーション
-            'new_image_urls' => 'nullable|array|max:3',
+            'new_image_urls' => 'nullable|array|max:5',
             'new_image_urls.*' => 'nullable|url|max:2048',
         ]);
 

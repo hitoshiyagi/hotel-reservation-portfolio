@@ -20,80 +20,115 @@
 </div>
 @endif
 
-<div class="d-flex align-items-center">
-    <a href="{{ route('rooms.create') }}" class="btn btn-primary ms-auto">
+<div class="d-flex justify-content-end align-items-center mb-4">
+    <a href="{{ route('rooms.create') }}" class="btn btn-primary">
         <i class="fas fa-plus me-1"></i> 新規追加
     </a>
 </div>
 
-<div>
+{{-- ★★★ 新しいグリッドレイアウトの開始 ★★★ --}}
+<div class="row g-4"> {{-- rowとg-4 (gap) でグリッドを構成 --}}
     @forelse ($rooms as $room)
-    <div class="d-flex flex-column flex-md-row m-4 p-0 shadow-lg mx-auto overflow-hidden"
-        style="background-color: #2b2b3a; max-width: 880px; border-radius: 8px;">
 
-        {{-- 1. 画像エリア --}}
-        <div class="room-card-image flex-shrink-0 position-relative" style="background-color: #383845;">
-            @if ($room->primary_image_url)
-            <img src="{{ $room->primary_image_url }}"
-                alt="{{ $room->type_name }}"
-                style="width: 100%; height: 100%; object-fit: cover;">
-            @else
-            <div class="d-flex align-items-center justify-content-center h-100">
-                <i class="fas fa-image fa-3x text-white-50"></i>
+    {{-- PCでは2列 (col-md-6)、タブレット以上で3列にしたい場合はcol-lg-4など調整 --}}
+    <div class="col-md-6">
+
+        {{-- カード本体 --}}
+        <div class="card shadow-lg h-100 overflow-hidden"
+            style="background-color: #2b2b3a; border-radius: 8px;">
+
+            {{-- 画像コンテナ (高さ固定) --}}
+            <div class="position-relative" style="height: 250px;">
+
+                {{-- メイン画像 (1枚目) --}}
+                <div style="height: 100%; width: 100%; position: relative;">
+                    @php
+                    $primaryImageUrl = $room->images->first()->image_url ?? null;
+                    @endphp
+                    @if ($primaryImageUrl)
+                    <img src="{{ $primaryImageUrl }}"
+                        alt="{{ $room->type_name }}"
+                        style="width: 100%; height: 100%; object-fit: cover;">
+                    @else
+                    <div class="d-flex align-items-center justify-content-center h-100" style="background-color: #383845;">
+                        <i class="fas fa-image fa-4x text-white-50"></i>
+                    </div>
+                    @endif
+                </div>
             </div>
-            @endif
+
+            {{-- カード本体コンテンツ --}}
+            <div class="p-3">
+                <h3 class="fs-5 fw-bold mb-1 text-white">{{ $room->type_name }}</h3>
+
+                {{-- 補助情報 (定員と料金) --}}
+                <div class="d-flex justify-content-between align-items-center mb-2 pt-1 border-bottom border-secondary pb-2">
+                    <span class="text-white-50">
+                        <i class="fas fa-user-friends me-1"></i> 定員{{ $room->capacity }}名
+                    </span>
+                    <span class="text-primary fw-bold fs-5">
+                        ¥{{ number_format($room->price) }}/泊
+                    </span>
+                </div>
+
+                {{-- サムネイルエリア (2枚目以降を表示) --}}
+                <div class="d-flex gap-2 mb-3">
+                    @php
+                    // 2枚目から5枚目までを取得 (最大4枚)
+                    $thumbnails = $room->images->skip(1)->take(4);
+                    $maxThumbnails = 4;
+                    @endphp
+
+                    @foreach ($thumbnails as $image)
+                    {{-- サムネイルのサイズを調整して4枚並べる --}}
+                    <img src="{{ $image->image_url }}"
+                        alt="サムネイル"
+                        style="width: 48px; height: 48px; object-fit: cover; border-radius: 4px; border: 1px solid #4a4a58;">
+                    @endforeach
+
+                    {{-- 画像が4枚に満たない場合のプレースホルダー --}}
+                    @for ($i = $thumbnails->count(); $i < $maxThumbnails; $i++)
+                        <div style="width: 48px; height: 48px; background-color: #383845; border-radius: 4px; border: 1px dashed #4a4a58;">
+                </div>
+                @endfor
+            </div>
+            {{-- 説明文 (短く表示) --}}
+            <p class="text-white-75 small mb-3" style="line-height: 1.4; height: 40px; overflow: hidden;">
+                {{ $room->description }}
+            </p>
         </div>
 
-        {{-- 2. テキストコンテンツエリア --}}
-        <div class="p-4 flex-grow-1">
-            <h5 class="fw-bold mb-1">{{ $room->type_name }}</h5>
-            <p class="text-white-75 mb-3 small" style="line-height: 1.4;">{{ $room->description }}</p>
-
-            <div class="d-flex align-items-center mt-3">
-                <span class="text-white-50 me-4">
-                    <i class="fas fa-user-friends me-1"></i> 定員{{ $room->capacity }}名
-                </span>
-                <span class="text-primary fw-bold fs-5">
-                    ¥{{ number_format($room->price) }}/泊
-                </span>
-            </div>
-        </div>
-
-        {{-- 3. アクションボタンエリア --}}
-        <div class="room-action-area d-flex justify-content-center align-items-center p-2 gap-2"
-            style="background-color: #383845; width: 100px; flex-shrink: 0;">
-
+        {{-- アクションボタンエリア --}}
+        <div class="p-3 pt-0 d-flex gap-2 mt-auto" style="background-color: #383340;">
 
             {{-- 編集ボタン --}}
             <a href="{{ route('rooms.edit', $room->id) }}"
-                class="btn btn-sm text-white w-100"
+                class="btn btn-sm text-white flex-grow-1"
                 style="background-color: #44445c; border: none; font-size: 0.9rem;">
-                <i class="fas fa-pencil-alt mb-1 d-inline-block d-md-block mx-auto"></i>
-                <span class="d-inline d-md-block">編集</span>
+                <i class="fas fa-pencil-alt me-1"></i> 編集
             </a>
 
             {{-- 削除ボタン --}}
             <form action="{{ route('rooms.destroy', $room->id) }}" method="POST"
-                onsubmit="return confirm('{{ $room->type_name }} を削除してもよろしいですか？');"
-                class="w-100">
+                onsubmit="return confirm('{{ $room->type_name }} を削除してもよろしいですか？');">
                 @csrf
                 @method('DELETE')
-
                 <button type="submit"
-                    class="btn btn-sm text-white w-100"
+                    class="btn btn-sm text-white"
                     style="background-color: #dc3545; border: none; font-size: 0.9rem;">
-                    <i class="fas fa-trash-alt mb-1 d-inline-block d-md-block mx-auto"></i>
-                    <span class="d-inline d-md-block">削除</span>
+                    <i class="fas fa-trash-alt"></i> 削除
                 </button>
             </form>
         </div>
     </div>
-    @empty
-    <div class="col-12">
-        <div class="alert alert-secondary text-center" role="alert" style="background-color: #383845; border-color: #4a4a58;">
-            <i class="fas fa-exclamation-circle me-2"></i> まだ部屋タイプが登録されていません。新規追加してください。
-        </div>
+</div>
+@empty
+{{-- 部屋がない場合のメッセージ (グリッド外) --}}
+<div class="col-12">
+    <div class="alert alert-secondary text-center" role="alert" style="background-color: #383845; border-color: #4a4a58;">
+        <i class="fas fa-exclamation-circle me-2"></i> まだ部屋タイプが登録されていません。新規追加してください。
     </div>
-    @endforelse
+</div>
+@endforelse
 </div>
 @endsection
