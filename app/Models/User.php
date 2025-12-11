@@ -9,7 +9,8 @@ class User extends Model
 {
     use HasFactory;
 
-    public function reservations(){
+    public function reservations()
+    {
         return $this->hasMany(Reservation::class);
     }
 }
