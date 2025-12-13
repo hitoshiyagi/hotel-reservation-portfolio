@@ -29,7 +29,30 @@ class AdminReservationController extends Controller
 
     public function edit(Reservation $reservation)
     {
-        $reservation->load(['room','user']);
-        return view('admin.reservations.edit',compact('reservation'));
+        $reservation->load(['room', 'user']);
+        return view('admin.reservations.edit', compact('reservation'));
     }
+
+    public function update(Request $request, Reservation $reservation)
+    {
+        $validated = $request->validate([
+            'check_in'    => ['required', 'date'],
+            'guests'      => ['required', 'integer', 'min:1','max:4'],
+            'total_price' => ['required', 'integer', 'min:0'],
+            'status'      => ['required', 'in:confirmed,cancelled'],
+        ]);
+
+        $reservation->update($validated);
+
+        return redirect()->route('admin.reservations.index')
+            ->with('success', '予約を更新しました');
+    }
+
+    public function destroy(Reservation $reservation)
+{
+    $reservation->delete();
+
+    return redirect()->route('admin.reservations.index')
+                     ->with('success', '予約を削除しました');
+}
 }
