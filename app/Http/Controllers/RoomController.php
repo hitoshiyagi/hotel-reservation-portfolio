@@ -29,6 +29,16 @@ class RoomController extends Controller
     }
 
 
+    public function show(string $id)
+    {
+        // 1. 詳細表示対象の部屋タイプをIDで取得
+        $room = \App\Models\Room::findOrFail($id);
+
+        // 2. 詳細ビューにデータを渡して表示
+        return view('rooms.show', compact('room'));
+    }
+
+
 
     public function edit(string $id)
     {

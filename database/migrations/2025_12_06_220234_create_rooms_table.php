@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id()->comment('ID');
 
             // 部屋タイプ名（例：プレミアム、スタンダード）※ユニーク
-            $table->string('name', 100)->unique()->comment('タイプ名（例：プレミアム、スタンダード）');
+            $table->string('type_name', 100)->unique()->comment('タイプ名（例：プレミアム、スタンダード）');
 
             // 部屋タイプの説明（NULL 許可）
             $table->text('description')->nullable()->comment('部屋タイプの説明');
@@ -41,3 +41,12 @@ return new class extends Migration
             $table->softDeletes()->comment('論理削除用（削除日時）将来用');
         });
     }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('rooms');
+    }
+};

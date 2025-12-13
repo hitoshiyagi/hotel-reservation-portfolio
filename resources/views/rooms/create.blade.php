@@ -11,7 +11,7 @@
 
 @section('content')
 
-<div class="card p-4 mx-auto" style="max-width: 800px;">
+<div class="card p-4 mx-auto" style="max-width: 1000px;">
 
     <h2 class="h4 mb-4 text-white-75">新しい部屋タイプの詳細</h2>
 

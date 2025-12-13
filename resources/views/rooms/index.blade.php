@@ -101,22 +101,29 @@
         {{-- アクションボタンエリア --}}
         <div class="p-3 pt-0 d-flex gap-2 mt-auto" style="background-color: #383340;">
 
-            {{-- 編集ボタン --}}
+            {{-- ★★★ 1. 詳細ボタン（最も目立たせる） ★★★ --}}
+            <a href="{{ route('rooms.show', $room->id) }}"
+                class="btn btn-sm btn-primary flex-grow-1"
+                style="border: none; font-size: 0.9rem;">
+                <i class="fas fa-eye me-1"></i> 詳細を見る
+            </a>
+
+            {{-- 2. 編集ボタン（固定幅） --}}
             <a href="{{ route('rooms.edit', $room->id) }}"
-                class="btn btn-sm text-white flex-grow-1"
-                style="background-color: #44445c; border: none; font-size: 0.9rem;">
+                class="btn btn-sm text-white"
+                style="background-color: #44445c; border: none; font-size: 0.9rem; width: 80px;">
                 <i class="fas fa-pencil-alt me-1"></i> 編集
             </a>
 
-            {{-- 削除ボタン --}}
+            {{-- 3. 削除ボタン（固定幅） --}}
             <form action="{{ route('rooms.destroy', $room->id) }}" method="POST"
                 onsubmit="return confirm('{{ $room->type_name }} を削除してもよろしいですか？');">
                 @csrf
                 @method('DELETE')
                 <button type="submit"
                     class="btn btn-sm text-white"
-                    style="background-color: #dc3545; border: none; font-size: 0.9rem;">
-                    <i class="fas fa-trash-alt"></i> 削除
+                    style="background-color: #dc3545; border: none; font-size: 0.9rem; width: 80px;">
+                    <i class="fas fa-trash-alt me-1"></i> 削除
                 </button>
             </form>
         </div>
