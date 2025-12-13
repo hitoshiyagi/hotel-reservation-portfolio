@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use App\Models\User;
 
 class AdminLoginController extends Controller
@@ -21,39 +22,40 @@ class AdminLoginController extends Controller
             'password' => ['required'],
         ]);
 
-        // 1. emailでユーザーを検索
+        // emailでユーザーを検索
         $user = User::where('email', $request->email)->first();
 
-        // 2. ユーザーが存在しない
+        // ユーザーが存在しない
         if (!$user) {
             return back()->withErrors([
                 'email' => 'メールアドレスまたはパスワードが正しくありません',
             ]);
         }
 
-        // 3. パスワードの照合
+        // パスワードの照合
         if (!Hash::check($request->password, $user->password)) {
             return back()->withErrors([
                 'email' => 'メールアドレスまたはパスワードが正しくありません',
             ]);
         }
 
-        // 4. 管理者権限チェック（role='admin'）
+        // 管理者権限チェック（role='admin'）
         if ($user->role !== 'admin') {
             return back()->withErrors([
                 'email' => '管理者権限がありません',
             ]);
         }
 
-        // 5. セッションに保存　※矢木さんのセッションキーにあわせる
-        session([
-            'admin_id' => $user->id,
-            'admin_role' => $user->role,
-            'admin_status' => $user->status,
-        ]);
+        // セッションに保存（パスワードは除外）
+        // $user->makeHidden('password');
+        session(['admin' => $user]);
+        // Log::info('Session saved:', ['user' => session('user')]);
+        // dd('Login処理完了', session('user')); // ここで止める
 
+        // セッションIDを新しく生成
         $request->session()->regenerate();
         
-        return redirect()->intended('/admin/dashboard'); // 管理者用ダッシュボードへ
+        // 管理者用ダッシュボードへ
+        return redirect()->intended('/admin/dashboard'); 
     }
 }

@@ -26,7 +26,7 @@ Route::post('/login', [UserLoginController::class, 'login'])->name('user.login')
 
 //// ログイン後の仮画面表示
 Route::get('/user/dashboard', function () {
-    if (!session()->has('user_id')) {
+    if (!session()->has('user')) {
         return redirect('/login');
     }
 
@@ -34,10 +34,10 @@ Route::get('/user/dashboard', function () {
 });
 
 //// ログアウト処理（仮）
-Route::get('/user/logout', function () {
+Route::post('/user/logout', function () {
     session()->flush(); // 全セッションを削除
     return redirect('/login');
-});
+})->name('user.logout');
 
 // 管理者ログイン
 Route::get('/admin/login', [AdminLoginController::class, 'show'])->name('admin.login.form');
@@ -45,7 +45,7 @@ Route::post('/admin/login', [AdminLoginController::class, 'login'])->name('admin
 
 //// ログイン後の仮画面表示
 Route::get('/admin/dashboard', function () {
-    if (!session()->has('admin_id')) {
+    if (!session()->has('admin')) {
         return redirect('/admin/login');
     }
 
@@ -53,7 +53,7 @@ Route::get('/admin/dashboard', function () {
 });
 
 //// ログアウト処理（仮）
-Route::get('/admin/logout', function () {
+Route::post('/admin/logout', function () {
     session()->flush(); // 全セッションを削除
     return redirect('/admin/login');
-});
+})->name('admin.logout');

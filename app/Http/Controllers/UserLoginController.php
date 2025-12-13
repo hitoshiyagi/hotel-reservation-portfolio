@@ -21,39 +21,38 @@ class UserLoginController extends Controller
             'password' => ['required'],
         ]);
 
-        // 1. emailでユーザーを検索
+        // emailでユーザーを検索
         $user = User::where('email', $request->email)->first();
 
-        // 2. ユーザーが存在しない
+        // ユーザーが存在しない
         if (!$user) {
             return back()->withErrors([
                 'email' => 'メールアドレスまたはパスワードが正しくありません',
             ]);
         }
 
-        // 3. パスワードの照合
+        // パスワードの照合
         if (!Hash::check($request->password, $user->password)) {
             return back()->withErrors([
                 'email' => 'メールアドレスまたはパスワードが正しくありません',
             ]);
         }
 
-        // 4. 管理者権限チェック（role='admin'）
+        // ユーザー権限チェック（role='customer'）
         if ($user->role !== 'customer') {
             return back()->withErrors([
                 'email' => '一般ユーザーとしての権限がありません',
             ]);
         }
 
-        // 5. セッションに保存　※錦織さんのセッションキーにあわせる
-        session([
-            'user_id' => $user->id,
-            'user_role' => $user->role,
-            'user_status' => $user->status,
-        ]);
+        // セッションに保存（パスワードは除外）
+        $user->makeHidden('password');
+        session(['user' => $user]);
 
+        // セッションIDを新しく生成
         $request->session()->regenerate();
         
-        return redirect()->intended('/user/dashboard'); // ユーザー用ダッシュボードへ
+        // ユーザー用ダッシュボードへ
+        return redirect()->intended('/user/dashboard'); 
     }
 }
