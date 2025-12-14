@@ -57,7 +57,8 @@
                 <div class="col-md-6 mb-3">
                     <label for="plan" class="form-label">プラン</label>
                     <select name="plan" id="plan" class="form-select" required>
-                        <option value="0" selected>素泊まり</option>
+                        {{-- old('plan')がない場合は $room->plan を使用 --}}
+                        <option value="0" @selected(old('plan', $room->plan ?? 0) == 0)>素泊まり</option>
                     </select>
                 </div>
 
@@ -66,8 +67,9 @@
                     <label for="price" class="form-label">料金 (円)</label>
                     <select class="form-select" id="price" name="price" required>
                         <option value="">選択してください</option>
-                        <option value="120000" @selected(old('price')==120000)>120,000円</option>
-                        <option value="200000" @selected(old('price')==200000)>200,000円</option>
+                        {{-- old('price')がない場合は $room->price を使用 --}}
+                        <option value="120000" @selected(old('price', $room->price ?? null) == 120000)>120,000円</option>
+                        <option value="200000" @selected(old('price', $room->price ?? null) == 200000)>200,000円</option>
                     </select>
                     @error('price')
                     <div class="text-danger small mt-1">{{ $message }}</div>
@@ -83,7 +85,8 @@
                     <select class="form-select" id="capacity" name="capacity" required>
                         <option value="">選択してください</option>
                         @for ($i = 1; $i <= 4; $i++)
-                            <option value="{{ $i }}" @selected(old('capacity')==$i)>{{ $i }} 名</option>
+                            {{-- old('capacity')がない場合は $room->capacity を使用 --}}
+                            <option value="{{ $i }}" @selected(old('capacity', $room->capacity ?? null) == $i)>{{ $i }} 名</option>
                             @endfor
                     </select>
                     @error('capacity')
@@ -97,7 +100,8 @@
                     <select class="form-select" id="total_rooms" name="total_rooms" required>
                         <option value="">選択してください</option>
                         @for ($i = 1; $i <= 5; $i++)
-                            <option value="{{ $i }}" @selected(old('total_rooms')==$i)>{{ $i }} 室</option>
+                            {{-- old('total_rooms')がない場合は $room->total_rooms を使用 --}}
+                            <option value="{{ $i }}" @selected(old('total_rooms', $room->total_rooms ?? null) == $i)>{{ $i }} 室</option>
                             @endfor
                     </select>
                     @error('total_rooms')
@@ -147,33 +151,39 @@
         {{-- モバイル(縦並び・全幅) -> PC(横並び・カスタム幅) --}}
         <div class="d-flex flex-column flex-sm-row justify-content-center gap-3 mt-4 mb-5">
 
-            {{-- 1. 更新ボタン (メインアクション) --}}
-            <button type="submit" form="updateForm"
-                class="btn btn-primary btn-sm w-100 w-sm-auto btn-update-w shadow-sm">
-                <i class="fas fa-check-circle me-2"></i>更新
-            </button>
+            {{-- 1. 更新フォーム (メインアクション) --}}
+            {{-- formタグのclassから w-100 w-sm-auto を削除 --}}
+            <form method="POST" action="{{ route('rooms.update', $room->id) }}">
+                @csrf
+                @method('PUT')
+                {{-- ボタンには w-100 を維持 --}}
+                <button type="submit"
+                    class="btn btn-primary btn-sm w-100 btn-update-w shadow-sm">
+                    <i class="fas fa-check-circle me-2"></i>更新
+                </button>
+            </form>
 
-            {{-- 2. 削除ボタン (重要アクション) --}}
-            {{-- ★注意: 編集画面のみ表示されるべきため、formを囲むdivを削除し、適切なクラスを付与 --}}
-            <form id="deleteForm" action="{{ route('rooms.destroy', $room->id) }}" method="POST"
-                onsubmit="return confirm('{{ $room->type_name }} を削除してもよろしいですか？\n（この操作は元に戻せません）');"
-                class="w-100 w-sm-auto">
+            {{-- 2. 削除フォーム --}}
+            {{-- formタグのclassから w-100 w-sm-auto を削除 --}}
+            <form action="{{ route('rooms.destroy', $room->id) }}" method="POST"
+                onsubmit="return confirm('{{ $room->type_name }} を削除してもよろしいですか？\n（この操作は元に戻せません）');">
                 @csrf
                 @method('DELETE')
-                <button type="submit" class="btn btn-sm btn-danger w-100 btn-delete-w shadow-sm">
-                    <i class="fas fa-trash-alt me-1"></i> 削除
+                {{-- ボタンには w-100 を維持 --}}
+                <button type="submit"
+                    class="btn btn-danger btn-sm w-100 btn-delete-w shadow-sm">
+                    <i class="fas fa-trash-alt me-1"></i>削除
                 </button>
             </form>
 
             {{-- 3. キャンセルボタン --}}
+            {{-- aタグのclassから w-sm-auto を削除 --}}
             <a href="{{ route('rooms.index') }}"
-                class="btn btn-secondary btn-sm w-100 w-sm-auto btn-cancel-w shadow-sm">
-                <i class="fas fa-undo me-2"></i> キャンセル
+                class="btn btn-secondary btn-sm w-100 btn-cancel-w shadow-sm">
+                <i class="fas fa-undo me-2"></i>キャンセル
             </a>
 
         </div>
-
-    </form>
 </div>
 @endsection
 

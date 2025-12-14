@@ -143,7 +143,7 @@
 
     {{-- 1. 更新/登録ボタン --}}
     {{-- ※ 登録画面では form="updateForm" は不要ですが、編集画面との共通化のためこの形を維持します --}}
-    <button type="submit" form="updateForm"
+    <button type="submit"
         class="btn btn-primary btn-sm w-100 w-sm-auto btn-update-w shadow-sm">
         <i class="fas fa-check-circle me-2"></i>登録
     </button>
