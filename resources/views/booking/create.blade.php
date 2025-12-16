@@ -1,7 +1,7 @@
 @extends('layouts.booking')
 
 @section('content')
-<div class="max-w-screen-2xl mx-auto p-6">
+<div class="max-w-screen-2xl mx-auto p-6" style="background-color: #f5f5dc;">
 
     <!-- ページ名とユーザー名 -->
     <div class="text-center mb-8">
@@ -89,7 +89,8 @@
                 
                 {{-- 部屋カード(Bootstrapのカードを使用) --}}
                 <div class="col-md-6 mb-4">
-                    <div class="card shadow-sm {{ !$room->available ? 'opacity-50' : '' }}">
+                    <div class="card flex-fill shadow-sm  {{ !$room->available ? 'opacity-50' : '' }}"
+                    style="min-height: 800px; background-color: #fff8dc">
                     
                     {{-- カードヘッダー：部屋タイプ --}}
                     <div class="card-header bg-dark text-white">
@@ -97,19 +98,38 @@
                     </div>
 
                     {{-- カード本文:料金・残り部屋数･選択ラジオボタン--}}
-                    <div class="card-body">
-                        {{-- 料金の表示 --}}
-                        <p class="fs-5 fw-bold">料金: ¥{{ number_format($room->price) }}</p>
+                    <div class="card-body d-flex flex-column justify-cotent-between" style="height: 100%;">
 
-                        <p>残り部屋数: {{ $room->remaining_rooms }} / {{ $room->total_rooms }}</p>
+                        {{-- 部屋画像（ダミーURL使用） --}}
+                            <img src="https://picsum.photos/400/250?random={{ $room->id }}" 
+                                 alt="{{ $room->type_name }}" 
+                                 class="img-fluid mb-3 rounded"
+                                 style="height: 480px; object-fit: cover; width: 100%;">
+
+
+                        {{-- 部屋画像（URLから表示）一旦非常時------ 
+                        @if($room->image_url)
+                            <img src="{{ $room->image_url }}" 
+                                 alt="{{ $room->type_name }}" 
+                                 class="img-fluid mb-3 rounded"
+                                 style="height: 480px; object-fit: cover; width: 100%;">
+                        @endif 
+                        --------------------------------------}}
+
+                        
+                        {{-- 料金の表示 --}}
+                        <p class="fs-3 fw-bold mt-3">料金: ¥{{ number_format($room->price) }}</p>
+
+                        <p class="fs-4">残り部屋数: {{ $room->remaining_rooms }} / {{ $room->total_rooms }}</p>
 
                         {{-- 部屋選択ラジオボタン --}}
-                        <div class="form-check mt-2">                       
+                        <div class="form-check d-flex align-items-center mt-3">                       
                             <input class="form-check-input" type="radio" name="room_id" value="{{ $room->id }}"
                                 {{ !$room->available ? 'disabled' : '' }}
                                 data-price="{{ $room->price }}" 
-                                onchange="enableReserveBtn()">
-                         <label class="form-check-label">
+                                onchange="enableReserveBtn()"
+                                style="tranform: scale(1.8); margin-right:0.6rem;">
+                         <label class="form-check-label fs-2 fw-bold mb-0">
                             {{ $room->available ? '空室有り' : '満室' }}
                         </label>
                         </div>

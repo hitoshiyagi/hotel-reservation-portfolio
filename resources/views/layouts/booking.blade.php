@@ -7,7 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     {{-- CSSやJSは一旦読み込まない（@vite削除） --}}
 </head>
-<body class="bg-gray-100">
+<body style="background-color: #f5f5dc;">
     {{-- ログアウト --}}
     <nav style="background:#eee; padding:10px;">
         <form action="{{ route('logout') }}" method="POST" style="display:inline;">
