@@ -75,7 +75,7 @@ Route::delete('/booking/{id}/cancel', [BookingController::class, 'cancel'])->nam
 // 予約キャンセル（一覧からキャンセルボタンを押したとき）
 Route::delete('/booking/{id}/cancel', [BookingController::class, 'cancel'])->name('booking.cancel');
 
-
+// 予約完了画面の表示
 Route::get('/booking/complete', [BookingController::class, 'complete'])->name('booking.complete');
 
 // 会員管理
