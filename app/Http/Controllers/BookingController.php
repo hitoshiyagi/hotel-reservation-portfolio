@@ -84,6 +84,8 @@ class BookingController extends Controller
     public function complete()
     {
     return view('booking.complete');
+
+
     }
 
     public function index()
