@@ -3,20 +3,8 @@
 @section('content')
 <div class="max-w-screen-2xl mx-auto p-6" style="background-color: #f5f5dc;">
 
-    <!-- ページ名とユーザー名 -->
-    <div class="text-center mb-8">
-        <h1 class="display-4 fw-bold">一泊限定 高級宿泊施設予約</h1>
-        <h2 class="display-6 text-dark mt-2">
-          @if(auth()->check())
-              ようこそ、{{ Auth::user()->name }}様
-          @else
-              ようこそ、ゲスト様
-          @endif
-        </h2>
-    </div>
-
     <!-- タブナビゲーション -->
-    <ul class="nav nav-tabs" id="bookingTabs" role="tablist">
+    <ul class="nav nav-tabs mb-3" id="bookingTabs" role="tablist">
       <li class="nav-item" role="presentation">
         <button class="nav-link active" id="form-tab" data-bs-toggle="tab" data-bs-target="#form" type="button" role="tab">
           予約フォーム
@@ -30,14 +18,11 @@
     </ul>
 
     <!-- タブコンテンツ -->
-    <div class="tab-content mt-4" id="bookingTabsContent">
+    <div class="tab-content" id="bookingTabsContent">
 
     <!-- 予約フォーム -->
     <div class="tab-pane fade show active" id="form" role="tabpanel" aria-labelledby="form-tab">
-        
-    
-        {{-- 予約フォーム全体 --}}
-        <form action="{{ route('booking.store') }}" method="POST" class="mt-6 grid grid-cols-2 gap-6">
+                <form action="{{ route('booking.store') }}" method="POST" class="mt-6">
             @csrf
 
         <div class="row">           
@@ -46,12 +31,22 @@
             <div class="bg-white p-4 rounded shadow">
 
                 {{-- チェックイン日選択 --}}
-                <label for="check_in_date">チェックイン日</label>
-                <input type="date" id="check_in_date"
-                       value="{{ request('check_in_date') ?? now()->format('Y-m-d')}}"
-                       min="{{ now()->format('Y-m-d') }}"
-                       onchange="window.location='{{ route('booking.create') }}?check_in_date='+this.value"
-                       class="form-control">
+                <div class="mb-3">
+                    <label for="check_in_date">チェックイン</label>
+                    <input type="date" id="check_in_date"
+                           value="{{ request('check_in_date') ?? now()->format('Y-m-d')}}"
+                           min="{{ now()->format('Y-m-d') }}"
+                           onchange="window.location='{{ route('booking.create') }}?check_in_date='+this.value"
+                           class="form-control">
+                </div>
+               
+                {{-- チェックアウト日翌日固定 --}}
+                <div class="mb-3">
+                    <label for="check_out_date" class="form-label fw-bold">チェックアウト</label>
+                    <input type="date" id="check_out_date"
+                    value="{{ request('check_in_date') ? \Carbon\Carbon::parse(request('check_in_date'))->addDay()->format('Y-m-d') : now()->addDay()->format('Y-m-d') }}"
+                    class="form-control" readonly>
+                </div>
 
                 {{-- hiddenで選択日を保持（予約確定時に送信される） --}}
                 <input type="hidden" name="check_in_date" value="{{ request('check_in_date') ?? now()->format('Y-m-d') }}">
@@ -69,9 +64,9 @@
                 </label>
 
                 {{-- 合計金額 --}}
-                <div class="mt-4 p-3 bg-light border rounded">
-                    <span class="fw-bold">合計金額:</span>
-                    <span id="totalPrice" class="fs-5 text-danger">¥0</span>
+                <div class="mt-3 mb-3 p-4 bg-opacity-25 border border-danger rounded text-center shadow">
+                    <span class="fw-bold fs-4 text-dark me-2">合計金額:</span>
+                    <span id="totalPrice" class="fs-2 fw-bold text-danger">¥0</span>
                 </div>
     
                 {{-- 予約確定ボタン(初期は白文字+disabled) --}}
@@ -89,18 +84,14 @@
                 
                 {{-- 部屋カード(Bootstrapのカードを使用) --}}
                 <div class="col-md-6 mb-4">
-                    <div class="card flex-fill shadow-sm  {{ !$room->available ? 'opacity-50' : '' }}"
+                                    <div class="card flex-fill shadow-sm {{ !$room->available ? 'opacity-50' : '' }}"
                     style="min-height: 800px; background-color: #fff8dc">
                     
                     {{-- カードヘッダー：部屋タイプ --}}
                     <div class="card-header bg-dark text-white">
                         <h2 class="h-5 mb-0">{{ $room->type_name }}</h2>
                     </div>
-
-                    {{-- カード本文:料金・残り部屋数･選択ラジオボタン--}}
-                    <div class="card-body d-flex flex-column justify-cotent-between" style="height: 100%;">
-
-                        {{-- 部屋画像（ダミーURL使用） --}}
+                                        <div class="card-body d-flex flex-column justify-content-between" style="height: 100%;">
                             <img src="https://picsum.photos/400/250?random={{ $room->id }}" 
                                  alt="{{ $room->type_name }}" 
                                  class="img-fluid mb-3 rounded"
@@ -128,7 +119,7 @@
                                 {{ !$room->available ? 'disabled' : '' }}
                                 data-price="{{ $room->price }}" 
                                 onchange="enableReserveBtn()"
-                                style="tranform: scale(1.8); margin-right:0.6rem;">
+                                                       style="transform: scale(1.8); margin-right:0.6rem;">
                          <label class="form-check-label fs-2 fw-bold mb-0">
                             {{ $room->available ? '空室有り' : '満室' }}
                         </label>
@@ -145,42 +136,43 @@
 
       <!-- 予約一覧 -->
       <div class="tab-pane fade" id="list" role="tabpanel" aria-labelledby="list-tab">
+        <div class="container">
         @if($reservations->isEmpty())
             <p>現在、予約はありません。</p>
         @else
-            <table class="table-auto w-full border-collapse border border-gray-300">
+            <table class="table table-bordered w-100">
                 <thead>
-                    <tr class="bg-gray-100">
-                        <th class="border px-4 py-2">予約ID</th>
-                        <th class="border px-4 py-2">部屋タイプ</th>
-                        <th class="border px-4 py-2">チェックイン</th>
-                        <th class="border px-4 py-2">人数</th>
-                        <th class="border px-4 py-2">料金</th>
-                        <th class="border px-4 py-2">ステータス</th>
-                        <th class="border px-4 py-2">操作</th>
+                    <tr class="bg-light">
+                        <th>予約ID</th>
+                        <th>部屋タイプ</th>
+                        <th>チェックイン</th>
+                        <th>人数</th>
+                        <th>料金</th>
+                        <th>ステータス</th>
+                        <th>操作</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach($reservations as $reservation)
                         <tr>
-                            <td class="border px-4 py-2">booking-{{ $reservation->id }}</td>
-                            <td class="border px-4 py-2">{{ $reservation->room->type_name }}</td>
-                            <td class="border px-4 py-2">{{ $reservation->check_in->format('Y-m-d') }}</td>
-                            <td class="border px-4 py-2">{{ $reservation->guests }}名</td>
-                            <td class="border px-4 py-2">¥{{ number_format($reservation->total_price) }}</td>
-                            <td class="border px-4 py-2">
+                            <td>booking-{{ $reservation->id }}</td>
+                            <td>{{ $reservation->room->type_name }}</td>
+                            <td>{{ $reservation->check_in->format('Y-m-d') }}</td>
+                            <td>{{ $reservation->guests }}名</td>
+                            <td>¥{{ number_format($reservation->total_price) }}</td>
+                            <td>
                                 @if($reservation->status === 'confirmed')
                                     <span class="text-green-600">確定</span>
                                 @else
                                     <span class="text-red-600">キャンセル済み</span>
                                 @endif
                             </td>
-                            <td class="border px-4 py-2">
+                            <td>
                                 @if($reservation->status === 'confirmed')
                                     <form action="{{ route('booking.cancel', $reservation->id) }}" method="POST">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" onclick="return confirm('本当にキャンセルしますか？')" class="bg-red-500 text-white px-3 py-1 rounded">
+                                        <button type="submit" onclick="return confirm('本当にキャンセルしますか？')" class="btn btn-danger btn-sm">
                                            キャンセル
                                         </button>
                                     </form>
@@ -193,7 +185,6 @@
         @endif
       </div>
     </div>
-</div>
 
 <!-- 予約完了モーダル -->
 @if(session('booking'))
@@ -205,6 +196,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="閉じる"></button>
       </div>
       <div class="modal-body">
+        <p><strong>ご予約ありがとうございます。予約が完了いたしました。ご来館を心よりお待ちしております。</strong></p>
         <p><strong>予約ID:</strong> booking-{{ session('booking.id') }}</p>
         <p><strong>部屋タイプ:</strong> {{ session('booking.room_name') }}</p>
         <p><strong>チェックイン:</strong> {{ session('booking.check_in') }}</p>
