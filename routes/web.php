@@ -26,16 +26,13 @@ use App\Http\Controllers\SimpleLoginController;
 */
 
 
-
-
-
-
-
 /*========================================
- ユーザー予約関連
+ ユーザー
  =======================================*/
 
- // アカウント登録
+// --- login（担当：高木） ---
+
+// アカウント登録
 Route::get('/register', [RegisterController::class, 'show'])->name('register.form');
 Route::post('/register', [RegisterController::class, 'register'])->name('register.submit');
 
@@ -58,11 +55,14 @@ Route::post('/user/logout', function () {
     return redirect('/login');
 })->name('user.logout');
 
+
+// --- 仮のlogin（担当：錦織） ---
 // 仮のログイン画面
 Route::get('/login-simple', [SimpleLoginController::class, 'showForm'])->name('login.simple');
 Route::post('/login-simple', [SimpleLoginController::class, 'login']);
 
 
+// --- user_booking（担当：錦織） ---
 /*一旦保留するルート
 
 // 予約フォーム表示（チェックイン日を選択したときもここに戻る）
@@ -101,12 +101,11 @@ Route::post('/logout', function () {
 })->name('logout');
 
 
-
-
 /*========================================
- 管理者ルート
+ 管理者
  =======================================*/
 
+// --- login（担当：高木） ---
 // 管理者ログイン
 Route::get('/admin/login', [AdminLoginController::class, 'show'])->name('admin.login.form');
 Route::post('/admin/login', [AdminLoginController::class, 'login'])->name('admin.login');
@@ -126,8 +125,8 @@ Route::post('/admin/logout', function () {
     return redirect('/admin/login');
 })->name('admin.logout');
 
+
 // --- rooms（担当：矢木） ---
-// http://127.0.0.1:8000/admin/rooms
 
 Route::prefix('admin/rooms')->group(function () {
     Route::get('/', [RoomController::class, 'index'])->name('admin.rooms.index');
@@ -140,6 +139,7 @@ Route::prefix('admin/rooms')->group(function () {
     Route::delete('{room}', [RoomController::class, 'destroy'])->name('admin.rooms.destroy');
 });
 
+// --- reservations（担当：坂野） ---
 Route::get('/admin/reservations', [AdminReservationController::class, 'index'])
     ->name('admin.reservations.index');
 
