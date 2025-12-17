@@ -108,47 +108,57 @@ Route::post('/logout', function () {
  =======================================*/
 
 // --- login ---
-// 管理者ログイン
+// 管理者ログイン（外）
 Route::get('/admin/login', [AdminLoginController::class, 'show'])->name('admin.login.form');
 Route::post('/admin/login', [AdminLoginController::class, 'login'])->name('admin.login');
 
-//// ログイン後の仮画面表示
-Route::get('/admin/dashboard', function () {
-    if (!session()->has('admin')) {
+// 管理者ログイン（中）
+Route::middleware('admin')->group(function () {
+
+    // ログイン後の入口
+    Route::get('/admin/dashboard', function () {
+        return redirect()->route('admin.rooms.index');
+    });
+
+
+    // --- reservations ---
+    Route::prefix('admin/reservations')->group(function () {
+
+        Route::get('/', [AdminReservationController::class, 'index'])
+            ->name('admin.reservations.index');
+
+        Route::get('{reservation}/edit', [AdminReservationController::class, 'edit'])
+            ->name('admin.reservations.edit');
+
+        Route::put('{reservation}', [AdminReservationController::class, 'update'])
+            ->name('admin.reservations.update');
+
+        Route::delete('{reservation}', [AdminReservationController::class, 'destroy'])
+            ->name('admin.reservations.destroy');
+    });
+
+
+    // --- rooms ---
+    Route::prefix('admin/rooms')->group(function () {
+        Route::get('/', [RoomController::class, 'index'])->name('admin.rooms.index');
+        Route::get('create', [RoomController::class, 'create'])->name('admin.rooms.create');
+        Route::post('/', [RoomController::class, 'store'])->name('admin.rooms.store');
+
+        Route::get('{room}', [RoomController::class, 'show'])->name('admin.rooms.show');
+        Route::get('{room}/edit', [RoomController::class, 'edit'])->name('admin.rooms.edit');
+        Route::put('{room}', [RoomController::class, 'update'])->name('admin.rooms.update');
+        Route::delete('{room}', [RoomController::class, 'destroy'])->name('admin.rooms.destroy');
+    });
+
+
+    //// ログアウト処理（仮）
+    Route::post('/admin/logout', function () {
+        session()->flush(); // 全セッションを削除
         return redirect('/admin/login');
-    }
+    })->name('admin.logout');
 
-    return view('admin.dashboard');
 });
 
-//// ログアウト処理（仮）
-Route::post('/admin/logout', function () {
-    session()->flush(); // 全セッションを削除
-    return redirect('/admin/login');
-})->name('admin.logout');
 
 
-// --- rooms ---
-Route::prefix('admin/rooms')->group(function () {
-    Route::get('/', [RoomController::class, 'index'])->name('admin.rooms.index');
-    Route::get('create', [RoomController::class, 'create'])->name('admin.rooms.create');
-    Route::post('/', [RoomController::class, 'store'])->name('admin.rooms.store');
 
-    Route::get('{room}', [RoomController::class, 'show'])->name('admin.rooms.show');
-    Route::get('{room}/edit', [RoomController::class, 'edit'])->name('admin.rooms.edit');
-    Route::match(['put', 'patch'], '{room}', [RoomController::class, 'update'])->name('admin.rooms.update');
-    Route::delete('{room}', [RoomController::class, 'destroy'])->name('admin.rooms.destroy');
-});
-
-// --- reservations ---
-Route::get('/admin/reservations', [AdminReservationController::class, 'index'])
-    ->name('admin.reservations.index');
-
-Route::get('/admin/reservations/{reservation}/edit', [AdminReservationController::class, 'edit'])
-    ->name('admin.reservations.edit');
-
-Route::put('/admin/reservations/{reservation}', [AdminReservationController::class, 'update'])
-    ->name('admin.reservations.update');
-
-Route::delete('/admin/reservations/{reservation}', [AdminReservationController::class, 'destroy'])
-    ->name('admin.reservations.destroy');
