@@ -25,7 +25,17 @@ use App\Http\Controllers\SimpleLoginController;
 |
 */
 
-// アカウント登録
+
+
+
+
+
+
+/*========================================
+ ユーザー予約関連
+ =======================================*/
+
+ // アカウント登録
 Route::get('/register', [RegisterController::class, 'show'])->name('register.form');
 Route::post('/register', [RegisterController::class, 'register'])->name('register.submit');
 
@@ -48,41 +58,6 @@ Route::post('/user/logout', function () {
     return redirect('/login');
 })->name('user.logout');
 
-// 管理者ログイン
-Route::get('/admin/login', [AdminLoginController::class, 'show'])->name('admin.login.form');
-Route::post('/admin/login', [AdminLoginController::class, 'login'])->name('admin.login');
-
-//// ログイン後の仮画面表示
-Route::get('/admin/dashboard', function () {
-    if (!session()->has('admin')) {
-        return redirect('/admin/login');
-    }
-
-    return view('admin.dashboard');
-});
-
-//// ログアウト処理（仮）
-Route::post('/admin/logout', function () {
-    session()->flush(); // 全セッションを削除
-    return redirect('/admin/login');
-})->name('admin.logout');
-Route::get('/admin/reservations', [AdminReservationController::class, 'index'])
-    ->name('admin.reservations.index');
-
-Route::get('/admin/reservations/{reservation}/edit', [AdminReservationController::class, 'edit'])
-    ->name('admin.reservations.edit');
-
-Route::put('/admin/reservations/{reservation}', [AdminReservationController::class, 'update'])
-    ->name('admin.reservations.update');
-
-Route::delete('/admin/reservations/{reservation}', [AdminReservationController::class, 'destroy'])
-    ->name('admin.reservations.destroy');
-
-
-/*========================================
- ユーザー予約関連
- =======================================*/
-
 // 仮のログイン画面
 Route::get('/login-simple', [SimpleLoginController::class, 'showForm'])->name('login.simple');
 Route::post('/login-simple', [SimpleLoginController::class, 'login']);
@@ -99,17 +74,14 @@ Route::post('/booking/store', [BookingController::class, 'store'])->name('bookin
 */
 
 // 予約一覧表示（タブの「予約一覧」で利用）
-Route::get('/booking', [BookingController::class, 'index'])->name('booking.index');
-
+Route::get('/booking', [BookingController::class, 'index'])
+    ->name('booking.index');
 // 予約フォーム＋一覧（タブ切り替え）
-Route::get('/booking', [BookingController::class, 'create'])->name('booking.create');
+Route::get('/booking/create', [BookingController::class, 'create'])
+    ->name('booking.create');
 
 // 予約保存（フォーム送信）
 Route::post('/booking/store', [BookingController::class, 'store'])->name('booking.store');
-
-// 予約キャンセル（一覧からキャンセルボタンを押したとき）
-Route::delete('/booking/{id}/cancel', [BookingController::class, 'cancel'])->name('booking.cancel');
-
 
 // 予約キャンセル（一覧からキャンセルボタンを押したとき）
 Route::delete('/booking/{id}/cancel', [BookingController::class, 'cancel'])->name('booking.cancel');
@@ -128,3 +100,54 @@ Route::post('/logout', function () {
     return redirect('/login-simple'); // ログアウト後のリダイレクト先
 })->name('logout');
 
+
+
+
+/*========================================
+ 管理者ルート
+ =======================================*/
+
+// 管理者ログイン
+Route::get('/admin/login', [AdminLoginController::class, 'show'])->name('admin.login.form');
+Route::post('/admin/login', [AdminLoginController::class, 'login'])->name('admin.login');
+
+//// ログイン後の仮画面表示
+Route::get('/admin/dashboard', function () {
+    if (!session()->has('admin')) {
+        return redirect('/admin/login');
+    }
+
+    return view('admin.dashboard');
+});
+
+//// ログアウト処理（仮）
+Route::post('/admin/logout', function () {
+    session()->flush(); // 全セッションを削除
+    return redirect('/admin/login');
+})->name('admin.logout');
+
+// --- rooms（担当：矢木） ---
+// http://127.0.0.1:8000/admin/rooms
+
+Route::prefix('admin/rooms')->group(function () {
+    Route::get('/', [RoomController::class, 'index'])->name('admin.rooms.index');
+    Route::get('create', [RoomController::class, 'create'])->name('admin.rooms.create');
+    Route::post('/', [RoomController::class, 'store'])->name('admin.rooms.store');
+
+    Route::get('{room}', [RoomController::class, 'show'])->name('admin.rooms.show');
+    Route::get('{room}/edit', [RoomController::class, 'edit'])->name('admin.rooms.edit');
+    Route::match(['put', 'patch'], '{room}', [RoomController::class, 'update'])->name('admin.rooms.update');
+    Route::delete('{room}', [RoomController::class, 'destroy'])->name('admin.rooms.destroy');
+});
+
+Route::get('/admin/reservations', [AdminReservationController::class, 'index'])
+    ->name('admin.reservations.index');
+
+Route::get('/admin/reservations/{reservation}/edit', [AdminReservationController::class, 'edit'])
+    ->name('admin.reservations.edit');
+
+Route::put('/admin/reservations/{reservation}', [AdminReservationController::class, 'update'])
+    ->name('admin.reservations.update');
+
+Route::delete('/admin/reservations/{reservation}', [AdminReservationController::class, 'destroy'])
+    ->name('admin.reservations.destroy');
