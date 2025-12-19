@@ -111,7 +111,7 @@ Route::middleware('admin')->group(function () {
 
     // ログイン後の入口
     Route::get('/admin/dashboard', function () {
-        return redirect()->route('admin.rooms.index');
+        return redirect()->route('admin.reservations.index');
     });
 
 
