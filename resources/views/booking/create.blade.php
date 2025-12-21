@@ -211,24 +211,50 @@
                 @if (session('booking'))
                     <div class="modal fade show" id="bookingCompleteModal" tabindex="-1"
                         aria-labelledby="bookingCompleteLabel" aria-hidden="true" style="display:block;">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header bg-green-600 text-white">
-                                    <h5 class="modal-title" id="bookingCompleteLabel">予約が完了しました！</h5>
+                        <div class="modal-dialog ,mofsl-lg">
+                            <div class="modal-content" style="boder-radius: 15px; overflow: hidden;">
+
+                                <!-- ゴールドグラデーションヘッダー -->
+                                <div class="modal-header text-white"
+                                    style="background: linear-gradient(90deg, #8b4513, #d4af37);">
+                                    <h4 class="modal-title" id="bookingCompleteLabel">
+                                        <i class="fas fa-check-circle me-2"></i>予約が完了しました！
+                                    </h4>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal"
                                         aria-label="閉じる"></button>
                                 </div>
-                                <div class="modal-body">
-                                    <p><strong>ご予約ありがとうございます。予約が完了いたしました。ご来館を心よりお待ちしております。</strong></p>
-                                    <p><strong>予約ID:</strong> booking-{{ session('booking.id') }}</p>
-                                    <p><strong>部屋タイプ:</strong> {{ session('booking.room_name') }}</p>
-                                    <p><strong>チェックイン:</strong> {{ session('booking.check_in') }}</p>
-                                    <p><strong>チェックアウト:</strong> {{ session('booking.check_out_date') }}</p>
-                                    <p><strong>人数:</strong> {{ session('booking.guests') }}名</p>
-                                    <p><strong>料金:</strong> ¥{{ number_format(session('booking.total_price')) }}</p>
+
+                                <!-- モーダル本文 -->
+                                <div class="modal-body" style="background-color: #fffaf0;">
+
+                                    <!-- 上部メッセージ -->
+                                    <div class="text-center mb-4">
+                                        <h5 class="fw-bold text-dark">ご予約ありがとうございます。</h5>
+                                        <p class="text-secondary">以下の内容で予約が確定しました。ご来館を心よりお待ちしております。</p>
+                                    </div>
+                                    <p class="mb-2"><strong class="text-dark">予約ID:</strong>
+                                        <span class="ms-2">booking-{{ session('booking.id') }}</span>
+                                    </p>
+                                    <p class="mb-2"><strong class="text-dark"><strong>部屋タイプ:</strong> 
+                                        <span class="ms-2">{{ session('booking.room_name') }}</span>
+                                    </p>
+                                    <p class="mb-2"><strong class="text-dark"><strong>チェックイン:</strong> 
+                                        <span class="ms-2">{{ session('booking.check_in') }}</span>
+                                    </p>
+                                    <p class="mb-2"><strong class="text-dark"><strong>チェックアウト:</strong> 
+                                        <span class="ms-2">{{ session('booking.check_out_date') }}</span>
+                                    </p>
+                                    <p class="mb-2"><strong class="text-dark"><strong>人数:</strong> 
+                                        <span class="ms-2">{{ session('booking.guests') }}名</p>
+                                    <p class="mb-0"><strong class="text-dark"><strong>料金:</strong> 
+                                        <span class="ms-2 fs-4 fw-bold text-danger">¥{{ number_format(session('booking.total_price')) }}</span>
+                                    </p>
                                 </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">閉じる</button>
+                            </div>
+
+                            <!-- モーダルのフッター -->
+                                <div class="modal-footer" style="background-color: #fffaf0;">
+                                    <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">閉じる</button>
                                 </div>
                             </div>
                         </div>
