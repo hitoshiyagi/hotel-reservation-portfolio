@@ -5,6 +5,9 @@
     <title>高級宿泊施設予約システム</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+
 
     <style>
       /* タブ全体の基本デザイン */
@@ -35,9 +38,29 @@
     </style>
 
     <style>
+
+        /* カードの高級感 */
+  .card {
+    border: 1px solid #d8c9a3;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    background-color: #fff8dc;
+
+
+  }
+
+  .card-header {
+    background: linear-gradient(to right, #3c2f2f, #5a4635);
+    color: #f5f5dc;
+    font-size: 1.4rem;
+    font-weight: bold;
+
+  }
+
   /* フォームラベルと入力欄の文字を大きく */
   label, .form-control {
     font-size: 1.2rem;   /* 通常より少し大きめ */
+    border-radius: 8px;  /* 柔らかさを表現 */
   }
 
   /* 日付入力欄（カレンダー）のサイズを拡大 */
@@ -46,6 +69,21 @@
     padding: 10px;       /* 内側余白を広げる */
     height: 50px;        /* 高さを指定して大きく */
   }
+
+
+  /* ボタンの高級感 */
+  .btn-luxury {
+    background: linear-gradient(90deg, #8b4513, #d4af37);
+    color: white;
+    border-radius: 8px;
+    padding: 12px 24px;
+    font-weight: bold;
+    border: none;
+  }
+  .btn-luxury:hover {
+    opacity: 0.9;
+  }
+
 
   /* 予約確定ボタンを目立たせる */
   #reserveBtn {
@@ -73,7 +111,18 @@
   font-size: 2rem;       /* 大きな文字 */
   font-weight: bold;     /* 太字 */
   color: #8b0000;        /* 濃い赤で強調 */
-  margin-top: 10px;
+  background-color: #fff0e6;
+  padding: 10px 20px;
+  border-radius: 8px;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+
+}
+html {
+  overflow-y: scroll;
+}
+
+.tab-content {
+  min-height: 600px;
 }
 
 
@@ -81,22 +130,22 @@
 
 
 </head>
-<body style="background-color: #f5f5dc;">
+  <body style="background-color: #f5f5dc;">
 
-    {{-- ログアウト --}}
-    <nav style="background:#eee; padding:10px;">
-
-
-        <form action="{{ route('logout') }}" method="POST" style="display:inline;">
+            <!-- ログアウトボタンページ名とユーザー名 -->
+            <header class="text-center py-4 mb-5"
+                style="background: linear-gradient(to right, #d4af37, #fff8dc); color:#3c2f2f;">
+              <form action="{{ route('logout') }}" method="POST"
+                    style="position: absolute; top: 10px; right: 20px;">
             @csrf
-            <button type="submit" class="btn btn-outline-danger btn-sm">ログアウト</button>
+            <button type="submit" class="btn btn-outline-danger btn-sm">
+              <i class="fas fa-sign-out-alt me-1"></i> ログアウト
+            </button>
         </form>
-    </nav>
 
             <!-- ページ名とユーザー名 -->
-            <header class="mt-2 mb-5">
-            <h1 class="display-4 fw-bold">一泊限定 高級宿泊施設予約</h1>
-            <h2 class="display-7 text-dark mt-2">
+            <h1 class="display-5 fw-bold">一泊限定 高級宿泊施設予約</h1>
+            <h2 class="fs-4 text-dark mt-2">
               @if(auth()->check())
                   ようこそ、{{ Auth::user()->name }}様
               @else
@@ -106,10 +155,10 @@
         </header>
 
     {{-- コンテンツ部分 --}}
-    <main style="container">
+    <main class="container">
         @yield('content')
     </main>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-</body>
+  </body>
 </html>

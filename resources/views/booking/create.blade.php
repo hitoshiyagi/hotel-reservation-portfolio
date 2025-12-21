@@ -32,7 +32,8 @@
 
                 {{-- チェックイン日選択 --}}
                 <div class="mb-3">
-                    <label for="check_in_date">チェックイン</label>
+                    <label for="check_in_date">
+                        <i class="fas fa-calendar-alt me2 text-secondary"></i>チェックイン</label>
                     <input type="date" id="check_in_date"
                            value="{{ request('check_in_date') ?? now()->format('Y-m-d')}}"
                            min="{{ now()->format('Y-m-d') }}"
@@ -42,7 +43,8 @@
                
                 {{-- チェックアウト日翌日固定 --}}
                 <div class="mb-3">
-                    <label for="check_out_date" class="form-label fw-bold">チェックアウト</label>
+                    <label for="check_out_date" class="form-label fw-bold">
+                        <i class="fas fa-calendar-check me-2 text-secondary"></i> チェックアウト</label>
                     <input type="date" id="check_out_date"
                     value="{{ request('check_in_date') ? \Carbon\Carbon::parse(request('check_in_date'))->addDay()->format('Y-m-d') : now()->addDay()->format('Y-m-d') }}"
                     class="form-control" readonly>
@@ -52,16 +54,11 @@
                 <input type="hidden" name="check_in_date" value="{{ request('check_in_date') ?? now()->format('Y-m-d') }}">
 
                 {{-- 人数入力 --}}
-                <label class="mt-4">人数
+                <label class="mt-4">
+                    <i class="fas fa-user-friends me-2 text-secondary"></i> 人数
                     <input type="number" name="guest_count" value="2" max="4" min="1" class="form-control">
                 </label>
 
-                {{-- プラン選択 --}}
-                <label class="mt-4">プラン
-                  <div>
-                      <input type="checkbox" name="selected_plans[]" value="breakfast"> 朝食付き (+3000円/人)
-                  </div>
-                </label>
 
                 {{-- 合計金額 --}}
                 <div class="mt-3 mb-3 p-4 bg-opacity-25 border border-danger rounded text-center shadow">
@@ -236,8 +233,6 @@ function enableReserveBtn() {
 {{-- JavaScriptで合計金額を反映させる --}}
 <script>
 function updateTotalPrice() {
-    const guestCount = parseInt(document.querySelector('[name="guest_count"]').value) || 0;
-    const breakfast = document.querySelector('[name="selected_plans[]"][value="breakfast"]').checked;
     let basePrice = 0;
 
     // 選択された部屋の料金を取得
@@ -246,12 +241,8 @@ function updateTotalPrice() {
         basePrice = parseInt(selectedRoom.dataset.price);
     }
 
-    let total = basePrice;
-    if (breakfast) {
-        total += 3000 * guestCount;
-    }
-
-    document.getElementById('totalPrice').textContent = '¥' + total.toLocaleString();
+    // 合計金額を反映
+    document.getElementById('totalPrice').textContent = '¥' + basePrice.toLocaleString();
 }
 
 // イベントリスナー

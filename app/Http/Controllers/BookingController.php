@@ -45,7 +45,6 @@ class BookingController extends Controller
         $validated = $request->validate([
             'room_id'       => 'required|exists:rooms,id',
             'guest_count'   => 'required|integer|min:1',
-            'selected_plans'=> 'array',
             'check_in_date' => 'required|date|after_or_equal:today',//当日以降は選べないようにする
         ]);
 
@@ -54,10 +53,7 @@ class BookingController extends Controller
 
         // 料金計算
         $totalPrice = $room->price ;
-        if (in_array('breakfast', $validated['selected_plans'] ?? [])) {
-            $totalPrice += 3000 * $validated['guest_count'];
-        }
-
+ 
         // reservations テーブルに保存
         $reservation = Reservation::create([
             'user_id'     => auth()->id(),
