@@ -4,7 +4,7 @@
     <div class="max-w-screen-2xl mx-auto p-6" style="background-color: #f5f5dc;">
 
         <!-- タブナビゲーション -->
-        <ul class="nav nav-tabs mb-3" id="bookingTabs" role="tablist">
+        <ul class="nav nav-tabs mb-3 booking-left" id="bookingTabs" role="tablist">
             <li class="nav-item" role="presentation">
                 <button class="nav-link active" id="form-tab" data-bs-toggle="tab" data-bs-target="#form" type="button" role="tab">
                     予約フォーム
@@ -25,9 +25,9 @@
                 <form action="{{ route('booking.store') }}" method="POST" class="mt-6">
                     @csrf
 
-                    <div class="row">
-                        {{-- 左サイドバー --}}
-                        <div class="col-md-4">
+                    <div class="row d-flex flex-wrap">
+                        {{-- 左サイド --}}
+                        <div class="col-lg-4 col-md-4 booking-left">
                             <div class="bg-white p-4 rounded shadow">
 
                                 {{-- チェックイン日選択 --}}
@@ -79,13 +79,13 @@
                         </div>
 
                         {{-- 右メインエリア --}}
-                        <div class="col-md-8">
+                        <div class="col-lg-8 col-md-8 booking-right">
                             <div class="row">
                                 @foreach ($rooms as $room)
                                     {{-- 部屋カード(Bootstrapのカードを使用) --}}
-                                    <div class="col-md-6 mb-4">
-                                        <div class="card flex-fill shadow-sm {{ !$room->available ? 'opacity-50' : '' }}"
-                                            style="min-height: 800px; background-color: #fff8dc">
+                                    <div class="col-lg-12 col-md-12 mb-4">
+                                        <div class="card room-card flex-fill shadow-sm {{ !$room->available ? 'opacity-50' : '' }}"
+                                            style="min-height: 480px; background-color: #fff8dc">
 
                                             {{-- カードヘッダー：部屋タイプ --}}
                                             <div class="card-header bg-dark text-white">
@@ -95,7 +95,7 @@
                                                 style="height: 100%;">
                                                 <img src="https://picsum.photos/400/250?random={{ $room->id }}"
                                                     alt="{{ $room->type_name }}" class="img-fluid mb-3 rounded"
-                                                    style="height: 480px; object-fit: cover; width: 100%;">
+                                                    style="height: 300px; object-fit: cover; width: 100%;">
 
 
                                                 {{-- 部屋画像（URLから表示）一旦非常時------ 
@@ -110,12 +110,12 @@
 
                                                 {{-- 料金の表示 --}}
                                                 <p class="fs-3 fw-bold mt-3">料金: ¥{{ number_format($room->price) }}</p>
+                                             
+                                                {{-- 空室表示+ 残り部屋数(横並び) --}}
+                                                <div class="d-flex justify-content-between align-items-center">
 
-                                                <p class="fs-4">残り部屋数: {{ $room->remaining_rooms }} /
-                                                    {{ $room->total_rooms }}</p>
-
-                                                {{-- 部屋選択ラジオボタン --}}
-                                                <div class="form-check d-flex align-items-center mt-3">
+                                                    {{-- 部屋選択ラジオボタン --}}
+                                                    <div class="form-check d-flex align-items-center">
                                                     <input class="form-check-input" type="radio" name="room_id"
                                                         value="{{ $room->id }}"
                                                         {{ !$room->available ? 'disabled' : '' }}
@@ -125,6 +125,12 @@
                                                         {{ $room->available ? '空室有り' : '満室' }}
                                                     </label>
                                                 </div>
+                                                {{-- 残り部屋数 --}}
+                                                <span class="fs-4 fw-bold text-secondary">
+                                                    {{ $room->remaining_rooms }} / {{ $room->total_rooms }}
+                                                </span>
+
+                                            </div>
                                             </div>
                                         </div>
                                     </div>
@@ -137,6 +143,8 @@
 
             <!-- 予約一覧 -->
             <div class="tab-pane fade" id="list" role="tabpanel" aria-labelledby="list-tab">
+
+ 
                 <div class="container">
 
                     <div class="card shadow-lg border-0 mb-5">
@@ -205,7 +213,7 @@
         </div>
 
     </div>
-</div>
+
 @endsection
                 <!-- 予約完了モーダル -->
                 @if (session('booking'))
