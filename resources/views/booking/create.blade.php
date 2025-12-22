@@ -182,13 +182,23 @@
                                                 <td>¥{{ number_format($reservation->total_price) }}</td>
                                                 <td>
                                                     @if ($reservation->status === 'confirmed')
-                                                        <span class="badge bg-success">確定</span>
+                                                        @if ($reservation->check_in->isPast() && !$reservation->check_in->isToday())
+                                                            {{-- 昨日より前の場合のみ「宿泊済み」 --}}
+                                                            <span class="text-gray-500 italic">宿泊済み</span>
+                                                        @elseif($reservation->check_in->isToday())
+                                                            {{-- 今日の場合は「確定」のまま（または「本日宿泊」） --}}
+                                                            <span class="text-green-600 font-bold">確定（本日宿泊）</span>
+                                                        @else
+                                                            {{-- 明日以降 --}}
+                                                            <span class="text-green-600 font-bold">確定</span>
+                                                        @endif
                                                     @else
-                                                        <span class="badge bg-secondary">キャンセル済み</span>
+                                                        <span class="text-red-600">キャンセル済み</span>
                                                     @endif
                                                 </td>
                                                 <td>
-                                                    @if ($reservation->status === 'confirmed')
+                                                    {{-- キャンセルボタンの条件：ステータスが確定 且つ チェックインが「明日以降 --}}
+                                                    @if ($reservation->status === 'confirmed' && $reservation->check_in->isAfter(now()->endOfDay()))
                                                         <form action="{{ route('booking.cancel', $reservation->id) }}"
                                                             method="POST">
                                                             @csrf
@@ -196,7 +206,7 @@
                                                             <button type="submit"
                                                                 onclick="return confirm('本当にキャンセルしますか？')"
                                                                 class="btn btn-danger btn-sm">
-                                                                <i class="fas fa-times-circle me-1"></i>キャンセル
+                                                                キャンセル
                                                             </button>
                                                         </form>
                                                     @endif
@@ -204,6 +214,7 @@
                                             </tr>
                                         @endforeach
                                     </tbody>
+
                                 </table>
                             @endif
 
