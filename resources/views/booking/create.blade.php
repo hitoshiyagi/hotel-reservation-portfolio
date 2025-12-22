@@ -72,9 +72,12 @@
                                     <span id="totalPrice" class="fs-2 fw-bold text-danger">¥0</span>
                                 </div>
 
+                                
                                 {{-- 予約確定ボタン(初期は白文字+disabled) --}}
                                 <button type="submit" class="mt-6 bg-amber-600 text-white px-4 py-2 rounded"
-                                    id="reserveBtn" disabled>
+                                    id="reserveBtn" 
+                                    disabled
+                                    onclick="return confirm('この内容で予約を確定しますか？');">
                                     予約確定
                                 </button>
                             </div>
@@ -95,20 +98,23 @@
                                             </div>
                                             <div class="card-body d-flex flex-column justify-content-between"
                                                 style="height: 100%;">
-                                                <img src="https://picsum.photos/400/250?random={{ $room->id }}"
-                                                    alt="{{ $room->type_name }}" class="img-fluid mb-3 rounded"
-                                                    style="height: 300px; object-fit: cover; width: 100%;">
 
+                                                {{-- 管理画面で設定した画像を反映させる --}}
+                                                @php
+                                                    $mainImage = $room->images->first()->image_url ?? null;
+                                                @endphp
 
-                                                {{-- 部屋画像（URLから表示）一旦非常時------ 
-                        @if ($room->image_url)
-                            <img src="{{ $room->image_url }}" 
-                                 alt="{{ $room->type_name }}" 
-                                 class="img-fluid mb-3 rounded"
-                                 style="height: 480px; object-fit: cover; width: 100%;">
-                        @endif 
-                        ------------------------------------ --}}
-
+                                                {{-- メイン画像 --}}
+                                                @if ($mainImage)
+                                                    <img src="{{ $mainImage }}" alt="{{ $room->type_name }}"
+                                                        class="img-fluid mb-3 rounded"
+                                                        style="height: 300px; object-fit: cover; width: 100%;">
+                                                @else
+                                                    {{-- 画像が無い場合のフォールバック --}}
+                                                    <img src="/images/no-image.png" alt="No image"
+                                                        class="img-fluid mb-3 rounded"
+                                                        style="height: 300px; object-fit: cover; width: 100%;">
+                                                @endif
 
                                                 {{-- 料金の表示 --}}
                                                 <p class="fs-3 fw-bold mt-3">料金: ¥{{ number_format($room->price) }}</p>
@@ -182,13 +188,23 @@
                                                 <td>¥{{ number_format($reservation->total_price) }}</td>
                                                 <td>
                                                     @if ($reservation->status === 'confirmed')
-                                                        <span class="badge bg-success">確定</span>
+                                                        @if ($reservation->check_in->isPast() && !$reservation->check_in->isToday())
+                                                            {{-- 昨日より前の場合のみ「宿泊済み」 --}}
+                                                            <span class="text-gray-500 italic">宿泊済み</span>
+                                                        @elseif($reservation->check_in->isToday())
+                                                            {{-- 今日の場合は「確定」のまま（または「本日宿泊」） --}}
+                                                            <span class="text-green-600 font-bold">確定（本日宿泊）</span>
+                                                        @else
+                                                            {{-- 明日以降 --}}
+                                                            <span class="text-green-600 font-bold">確定</span>
+                                                        @endif
                                                     @else
-                                                        <span class="badge bg-secondary">キャンセル済み</span>
+                                                        <span class="text-red-600">キャンセル済み</span>
                                                     @endif
                                                 </td>
                                                 <td>
-                                                    @if ($reservation->status === 'confirmed')
+                                                    {{-- キャンセルボタンの条件：ステータスが確定 且つ チェックインが「明日以降 --}}
+                                                    @if ($reservation->status === 'confirmed' && $reservation->check_in->isAfter(now()->endOfDay()))
                                                         <form action="{{ route('booking.cancel', $reservation->id) }}"
                                                             method="POST">
                                                             @csrf
@@ -196,7 +212,7 @@
                                                             <button type="submit"
                                                                 onclick="return confirm('本当にキャンセルしますか？')"
                                                                 class="btn btn-danger btn-sm">
-                                                                <i class="fas fa-times-circle me-1"></i>キャンセル
+                                                                キャンセル
                                                             </button>
                                                         </form>
                                                     @endif
@@ -204,6 +220,7 @@
                                             </tr>
                                         @endforeach
                                     </tbody>
+
                                 </table>
                             @endif
 
