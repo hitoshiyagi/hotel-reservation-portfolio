@@ -18,6 +18,7 @@
             background: linear-gradient(to right, #d4af37, #fff8dc);
             padding: 20px;
             text-align: center;
+            margin:auto;
             color: #333;
         }
         .room-card {

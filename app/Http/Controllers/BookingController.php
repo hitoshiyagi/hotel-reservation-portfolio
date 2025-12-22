@@ -45,7 +45,6 @@ class BookingController extends Controller
         $validated = $request->validate([
             'room_id'       => 'required|exists:rooms,id',
             'guest_count'   => 'required|integer|min:1',
-            'selected_plans'=> 'array',
             'check_in_date' => 'required|date|after_or_equal:today',//当日以降は選べないようにする
         ]);
 
@@ -54,10 +53,7 @@ class BookingController extends Controller
 
         // 料金計算
         $totalPrice = $room->price ;
-        if (in_array('breakfast', $validated['selected_plans'] ?? [])) {
-            $totalPrice += 3000 * $validated['guest_count'];
-        }
-
+ 
         // reservations テーブルに保存
         $reservation = Reservation::create([
             'user_id'     => auth()->id(),
@@ -96,13 +92,16 @@ class BookingController extends Controller
         return view('booking.index', compact('reservations'));
     }
 
+
+    //予約のキャンセル処理
     public function cancel($id)
     {
         $reservation = Reservation::where('id', $id)
             ->where('user_id', auth()->id())
             ->firstOrFail();
 
-        $reservation->delete();
+        $reservation->status= 'cancelled';
+        $reservation->save();
 
         return redirect()->route('booking.create')
             ->with('success', '予約を削除しました');
