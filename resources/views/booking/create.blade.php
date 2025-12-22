@@ -95,20 +95,23 @@
                                             </div>
                                             <div class="card-body d-flex flex-column justify-content-between"
                                                 style="height: 100%;">
-                                                <img src="https://picsum.photos/400/250?random={{ $room->id }}"
-                                                    alt="{{ $room->type_name }}" class="img-fluid mb-3 rounded"
-                                                    style="height: 300px; object-fit: cover; width: 100%;">
 
+                                                {{-- 管理画面で設定した画像を反映させる --}}
+                                                @php
+                                                    $mainImage = $room->images->first()->image_url ?? null;
+                                                @endphp
 
-                                                {{-- 部屋画像（URLから表示）一旦非常時------ 
-                        @if ($room->image_url)
-                            <img src="{{ $room->image_url }}" 
-                                 alt="{{ $room->type_name }}" 
-                                 class="img-fluid mb-3 rounded"
-                                 style="height: 480px; object-fit: cover; width: 100%;">
-                        @endif 
-                        ------------------------------------ --}}
-
+                                                {{-- メイン画像 --}}
+                                                @if ($mainImage)
+                                                    <img src="{{ $mainImage }}" alt="{{ $room->type_name }}"
+                                                        class="img-fluid mb-3 rounded"
+                                                        style="height: 300px; object-fit: cover; width: 100%;">
+                                                @else
+                                                    {{-- 画像が無い場合のフォールバック --}}
+                                                    <img src="/images/no-image.png" alt="No image"
+                                                        class="img-fluid mb-3 rounded"
+                                                        style="height: 300px; object-fit: cover; width: 100%;">
+                                                @endif
 
                                                 {{-- 料金の表示 --}}
                                                 <p class="fs-3 fw-bold mt-3">料金: ¥{{ number_format($room->price) }}</p>
