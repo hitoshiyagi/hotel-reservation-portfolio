@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
     <meta charset="UTF-8">
     <title>管理者ログイン</title>
@@ -11,6 +12,7 @@
     <!-- Font Awesome（アイコン表示） -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
+
 <body class="login-page">
     <h1 class="login-title"><i class="fas fa-hotel me-2 opacity-75"></i>宿泊施設予約システム</h1>
 
@@ -18,15 +20,15 @@
         <h2>管理者ログイン</h2>
 
         @if ($errors->any())
-            <ul class="error-list">
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
+        <ul class="error-list">
+            @foreach ($errors->all() as $error)
+            <li>{{ $error }}</li>
+            @endforeach
+        </ul>
         @endif
 
         @if (session('success'))
-            <p style="color: green; margin-bottom: 20px;">{{ session('success') }}</p>
+        <p style="color: green; margin-bottom: 20px;">{{ session('success') }}</p>
         @endif
 
         <form method="POST" action="{{ route('admin.login') }}">
@@ -43,11 +45,18 @@
             </div>
 
             <div>
-                <button type="submit">ログイン</button>
+                <button type="submit" class="mb-3">ログイン</button>
             </div>
+            <div style="padding-top: 20px; font-size: 0.8rem; color: #6b6b6b">
+                <strong>【管理者テスト用アカウント】</strong>
+                <div class="mt-1">メールアドレス: admin@example.com</div>
+                <div>パスワード: admin1234</div>
+            </div>
+
         </form>
     </div>
 </body>
+
 </html>
 
 

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
     <meta charset="UTF-8">
     <title>ログイン</title>
@@ -7,6 +8,7 @@
     <!-- Font Awesome（アイコン表示） -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
+
 <body>
     <h1 class="login-title"><i class="fas fa-hotel me-2 opacity-75"></i>一泊限定 高級宿泊施設予約</h1>
 
@@ -14,15 +16,15 @@
         <h2>ログイン</h2>
 
         @if ($errors->any())
-            <ul class="error-list">
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
+        <ul class="error-list">
+            @foreach ($errors->all() as $error)
+            <li>{{ $error }}</li>
+            @endforeach
+        </ul>
         @endif
 
         @if (session('success'))
-            <p style="color: green; margin-bottom: 20px;">{{ session('success') }}</p>
+        <p style="color: green; margin-bottom: 20px;">{{ session('success') }}</p>
         @endif
 
         <form method="POST" action="{{ route('user.login') }}">
@@ -41,6 +43,11 @@
             <div>
                 <button type="submit">ログイン</button>
             </div>
+            <div style="padding-top: 20px; font-size: 0.8rem; color: #6b6b6b">
+                <strong>【テストユーザー用アカウント】</strong>
+                <div class="mt-1">メールアドレス: user@example.com</div>
+                <div>パスワード: user1234</div>
+            </div>
         </form>
 
         <div class="mt-4 text-center">
@@ -48,4 +55,5 @@
         </div>
     </div>
 </body>
+
 </html>
