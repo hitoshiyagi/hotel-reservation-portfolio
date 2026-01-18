@@ -66,14 +66,16 @@ class BookingController extends Controller
 
         // セッションに予約情報を渡す
 
-        return redirect()->route('booking.create')->with('booking', [
-            'id'            => $reservation->id,
-            'room_name'     => $room->type_name,
-            'check_in'      => $reservation->check_in->format('Y-m-d'),
-            'check_out_date'=> $checkOutDate->format('Y-m-d'), // ← 表示用
-            'guests'        => $reservation->guests,
-            'total_price'   => $reservation->total_price,
-        ]);
+        return redirect()->route('booking.create')
+            ->with('booking_success', 'ご予約が完了いたしました。') // メッセージを渡す
+            ->with('booking', [ // モーダルや詳細表示用のデータも念のため残す
+                'id'            => $reservation->id,
+                'room_name'     => $room->type_name,
+                'check_in'      => $reservation->check_in->format('Y-m-d'),
+                'check_out_date' => $checkOutDate->format('Y-m-d'),
+                'guests'        => $reservation->guests,
+                'total_price'   => $reservation->total_price,
+            ]);
     }
 
     // 予約完了画面の表示
@@ -104,7 +106,8 @@ class BookingController extends Controller
         $reservation->save();
 
         return redirect()->route('booking.create')
-            ->with('success', '予約を削除しました');
+            // キー名を success から booking_success に統一するか、Blade側で両方受けるようにする
+            ->with('booking_success', '予約をキャンセルしました。');
     }
 }
 

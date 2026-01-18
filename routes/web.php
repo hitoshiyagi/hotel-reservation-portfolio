@@ -25,6 +25,10 @@ use App\Http\Controllers\SimpleLoginController;
 |
 */
 
+// サイトのトップページ (http://your-domain.com/) にアクセスした時に index.blade.php を表示
+Route::get('/', function () {
+    return view('index');
+});
 
 /*========================================
  ユーザー
@@ -53,11 +57,6 @@ Route::post('/user/logout', function () {
     session()->flush(); // 全セッションを削除
     return redirect('/login');
 })->name('user.logout');
-
-
-
-// --- user_booking ---
-
 
 
 // 予約一覧表示（タブの「予約一覧」で利用）

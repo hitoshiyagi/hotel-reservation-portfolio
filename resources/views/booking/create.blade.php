@@ -1,332 +1,512 @@
-@extends('layouts.booking')
+<!DOCTYPE html>
+<html lang="ja">
 
-@section('content')
-    <div class="max-w-screen-2xl mx-auto p-6" style="background-color: #f5f5dc;">
+<head>
+    <meta charset="UTF-8">
+    <title>施設コンセプト | 高級旅館予約</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        <!-- タブナビゲーション -->
-        <ul class="nav nav-tabs mb-3 booking-left" id="bookingTabs" role="tablist">
-            <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="form-tab" data-bs-toggle="tab" data-bs-target="#form" type="button"
-                    role="tab">
-                    予約フォーム
+    {{-- 外部ライブラリ --}}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;600&family=Noto+Sans+JP:wght@300;400&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --ryokan-deep-green: #2d4a3e;
+            --ryokan-light-green: #5a7d6a;
+            --ryokan-gold: #b8a485;
+            --ryokan-beige: #f5f1eb;
+            --ryokan-cream: #faf9f7;
+            --background: #faf9f7;
+            --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        }
+
+        body {
+            font-family: 'Noto Serif JP', serif;
+            background-color: var(--background);
+            color: #333;
+            line-height: 1.7;
+        }
+
+        .container-custom {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 60px 20px;
+        }
+
+        /* タブデザイン */
+        .nav-pills .nav-link {
+            border-radius: 0;
+            padding: 12px 30px;
+            color: #666;
+            background: transparent;
+            border-bottom: 2px solid transparent;
+            font-weight: 500;
+        }
+
+        .nav-pills .nav-link.active {
+            background: transparent;
+            color: var(--ryokan-deep-green);
+            border-bottom: 2px solid var(--ryokan-deep-green);
+        }
+
+        /* 通知アラート共通 */
+        .alert-ryokan {
+            background-color: #fff;
+            border: none;
+            border-left: 5px solid var(--ryokan-deep-green);
+            box-shadow: var(--card-shadow);
+            border-radius: 0;
+            color: #333;
+        }
+
+        .alert-ryokan-cancel {
+            border-left-color: #dc3545;
+            /* キャンセル時は赤 */
+        }
+
+        .card-modern {
+            border: none;
+            border-radius: 0;
+            background: #fff;
+            box-shadow: var(--card-shadow);
+            height: 100%;
+        }
+
+        @media (min-width: 992px) {
+            .sticky-sidebar {
+                position: sticky;
+                top: 20px;
+            }
+        }
+
+        .room-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .room-card {
+            background: #fff;
+            border: 1px solid #eee;
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+        }
+
+        .room-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+
+        .room-card.selected {
+            border: 2px solid var(--ryokan-gold);
+            background: #fffcf8;
+        }
+
+        .room-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .room-card .card-body {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        .room-title {
+            font-weight: 600;
+            font-size: 1.15rem;
+            margin-bottom: 10px;
+        }
+
+        .room-price {
+            color: var(--ryokan-deep-green);
+            font-weight: 600;
+        }
+
+        .room-desc {
+            font-size: 0.85rem;
+            color: #777;
+            margin-bottom: 15px;
+            font-family: 'Noto Sans JP', sans-serif;
+        }
+
+        .detail-view {
+            border-top: 4px solid var(--ryokan-gold);
+            padding: 40px;
+            animation: fadeIn 0.5s ease;
+            margin-top: 30px;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .thumb-gallery img {
+            width: 70px;
+            height: 70px;
+            object-fit: cover;
+            cursor: pointer;
+            opacity: 0.6;
+            transition: 0.3s;
+            border: 1px solid transparent;
+        }
+
+        .thumb-gallery img:hover,
+        .thumb-gallery img.active {
+            opacity: 1;
+            border-color: var(--ryokan-gold);
+        }
+
+        .btn-reserve {
+            background: var(--ryokan-deep-green);
+            color: #fff;
+            border: none;
+            border-radius: 0;
+            padding: 15px;
+            transition: 0.3s;
+            letter-spacing: 0.1em;
+        }
+
+        .btn-reserve:hover {
+            background: var(--ryokan-light-green);
+            color: #fff;
+        }
+
+        .btn-reserve:disabled {
+            background: #ccc;
+        }
+
+        .price-box {
+            background: var(--ryokan-beige);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .btn-logout {
+            font-family: 'Noto Sans JP', sans-serif;
+            font-size: 0.8rem;
+            letter-spacing: 0.05em;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container-custom">
+        {{-- ヘッダー部分 --}}
+        <div class="d-flex justify-content-between align-items-end mb-5">
+            <div>
+                <span class="text-uppercase small tracking-widest text-muted mb-2 d-block">Reservation</span>
+                <h2 class="mb-0">宿泊予約</h2>
+            </div>
+            <form action="{{ route('logout') }}" method="POST">
+                @csrf
+                <button type="submit" class="btn btn-link text-secondary btn-logout text-decoration-none">
+                    <i class="fas fa-sign-out-alt me-1"></i> LOGOUT
+                </button>
+            </form>
+        </div>
+
+        {{-- タブ制御ロジック：予約(booking) または キャンセル(booking_success) があれば「予約状況」を表示 --}}
+        @php
+        $showListTab = session('booking') || session('booking_success');
+        @endphp
+
+        <ul class="nav nav-pills mb-5 justify-content-center" id="bookingTabs" role="tablist">
+            <li class="nav-item">
+                <button class="nav-link {{ $showListTab ? '' : 'active' }}" id="form-tab" data-bs-toggle="tab" data-bs-target="#form" type="button" role="tab">
+                    ご予約フォーム
                 </button>
             </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="list-tab" data-bs-toggle="tab" data-bs-target="#list" type="button"
-                    role="tab">
-                    予約一覧
+            <li class="nav-item">
+                <button class="nav-link {{ $showListTab ? 'active' : '' }}" id="list-tab" data-bs-toggle="tab" data-bs-target="#list" type="button" role="tab">
+                    予約状況の確認
                 </button>
             </li>
         </ul>
 
-        <!-- タブコンテンツ -->
-        <div class="tab-content" id="bookingTabsContent">
-
-            <!-- 予約フォーム -->
-            <div class="tab-pane fade show active" id="form" role="tabpanel" aria-labelledby="form-tab">
-                <form action="{{ route('booking.store') }}" method="POST" class="mt-6">
+        <div class="tab-content" id="bookingTabContent">
+            {{-- 1. 予約フォームタブ --}}
+            <div class="tab-pane fade {{ $showListTab ? '' : 'show active' }}" id="form" role="tabpanel">
+                <form action="{{ route('booking.store') }}" method="POST">
                     @csrf
-
-                    <div class="row d-flex flex-wrap">
-                        {{-- 左サイド --}}
-                        <div class="col-lg-4 col-md-4 booking-left">
-                            <div class="bg-white p-4 rounded shadow">
-
-                                {{-- チェックイン日選択 --}}
-                                <div class="mb-3">
-                                    <label for="check_in_date">
-                                        <i class="fas fa-calendar-alt me-2 text-secondary"></i>チェックイン
-                                    </label>
-
-                                    <input type="date" id="check_in_date"
-                                        value="{{ request('check_in_date') ?? now()->format('Y-m-d') }}"
-                                        min="{{ now()->format('Y-m-d') }}"
-                                        onchange="window.location='{{ route('booking.create') }}?check_in_date=' + encodeURIComponent(this.value)"
-                                        class="form-control">
+                    <div class="row g-5">
+                        {{-- 左サイドバー：条件入力 --}}
+                        <div class="col-lg-4">
+                            <div class="sticky-sidebar">
+                                <div class="card-modern p-4">
+                                    <h4 class="h5 mb-4 border-bottom pb-2">ご宿泊条件</h4>
+                                    <div class="mb-4">
+                                        <label class="small text-muted mb-2">チェックイン</label>
+                                        <input type="date" id="check_in_date" name="check_in_date"
+                                            value="{{ request('check_in_date') ?? now()->format('Y-m-d') }}"
+                                            min="{{ now()->format('Y-m-d') }}"
+                                            onchange="window.location='{{ route('booking.create') }}?check_in_date=' + encodeURIComponent(this.value)"
+                                            class="form-control bg-light border-0">
+                                    </div>
+                                    <div class="mb-4">
+                                        <label class="small text-muted mb-2">人数（大人のみ）</label>
+                                        <select name="guest_count" id="guest_count" class="form-select bg-light border-0">
+                                            @for($i=1; $i<=4; $i++)
+                                                <option value="{{ $i }}" {{ $i == 2 ? 'selected' : '' }}>{{ $i }}名様</option>
+                                                @endfor
+                                        </select>
+                                    </div>
+                                    <div class="price-box text-center">
+                                        <div class="small text-muted mb-1">選択中の合計金額</div>
+                                        <div id="totalPrice" class="h3 mb-0">¥0</div>
+                                    </div>
+                                    <input type="hidden" name="room_id" id="room_id">
+                                    <button type="submit" id="reserveBtn" class="btn btn-reserve w-100" disabled
+                                        onclick="return confirm('この内容で予約を確定しますか？');">
+                                        この内容で予約する
+                                    </button>
                                 </div>
-
-                                {{-- チェックアウト日(翌日固定) --}}
-                                <div class="mb-3">
-                                    <label for="check_out_date" class="form-label fw-bold">
-                                        <i class="fas fa-calendar-check me-2 text-secondary"></i> チェックアウト</label>
-                                    <input type="date" id="check_out_date"
-                                        value="{{ request('check_in_date') ? \Carbon\Carbon::parse(request('check_in_date'))->addDay()->format('Y-m-d') : now()->addDay()->format('Y-m-d') }}"
-                                        class="form-control" readonly>
-                                </div>
-
-                                {{-- hiddenで選択日を保持（予約確定時に送信される） --}}
-                                <input type="hidden" name="check_in_date"
-                                    value="{{ request('check_in_date') ?? now()->format('Y-m-d') }}">
-
-                                {{-- 人数入力 --}}
-                                <label class="mt-4">
-                                    <i class="fas fa-user-friends me-2 text-secondary"></i> 人数
-                                    <input type="number" name="guest_count" value="2" max="4" min="1"
-                                        class="form-control">
-                                </label>
-
-
-                                {{-- 合計金額 --}}
-                                <div class="mt-3 mb-3 p-4 bg-opacity-25 border border-danger rounded text-center shadow">
-                                    <span class="fw-bold fs-4 text-dark me-2">合計金額:</span>
-                                    <span id="totalPrice" class="fs-2 fw-bold text-danger">¥0</span>
-                                </div>
-
-                                
-                                {{-- 予約確定ボタン(初期は白文字+disabled) --}}
-                                <button type="submit" class="mt-6 bg-amber-600 text-white px-4 py-2 rounded"
-                                    id="reserveBtn" 
-                                    disabled
-                                    onclick="return confirm('この内容で予約を確定しますか？');">
-                                    予約確定
-                                </button>
                             </div>
                         </div>
 
-                        {{-- 右メインエリア --}}
-                        <div class="col-lg-8 col-md-8 booking-right">
-                            <div class="row">
-                                @foreach ($rooms as $room)
-                                    {{-- 部屋カード(Bootstrapのカードを使用) --}}
-                                    <div class="col-lg-12 col-md-12 mb-4">
-                                        <div class="card room-card flex-fill shadow-sm {{ !$room->available ? 'opacity-50' : '' }}"
-                                            style="min-height: 480px; background-color: #fff8dc">
+                        {{-- 右メイン：部屋選択 --}}
+                        <div class="col-lg-8">
+                            <h4 class="h5 mb-4 px-2">お部屋を選択してください</h4>
+                            <div class="room-list">
+                                @foreach($rooms as $room)
+                                <div class="room-card"
+                                    data-room-id="{{ $room->id }}"
+                                    data-price="{{ $room->price }}"
+                                    data-description="{{ $room->description }}"
+                                    data-name="{{ $room->type_name }}"
+                                    data-capacity="{{ $room->capacity }}"
+                                    data-images='@json($room->images->map(fn($img) => $img->image_url))'
+                                    data-available="{{ $room->available ? '1' : '0' }}">
 
-                                            {{-- カードヘッダー：部屋タイプ --}}
-                                            <div class="card-header bg-dark text-white">
-                                                <h2 class="h-5 mb-0">{{ $room->type_name }}</h2>
-                                            </div>
-                                            <div class="card-body d-flex flex-column justify-content-between"
-                                                style="height: 100%;">
-
-                                                {{-- 管理画面で設定した画像を反映させる --}}
-                                                @php
-                                                    $mainImage = $room->images->first()->image_url ?? null;
-                                                @endphp
-
-                                                {{-- メイン画像 --}}
-                                                @if ($mainImage)
-                                                    <img src="{{ $mainImage }}" alt="{{ $room->type_name }}"
-                                                        class="img-fluid mb-3 rounded"
-                                                        style="height: 300px; object-fit: cover; width: 100%;">
-                                                @else
-                                                    {{-- 画像が無い場合のフォールバック --}}
-                                                    <img src="/images/no-image.png" alt="No image"
-                                                        class="img-fluid mb-3 rounded"
-                                                        style="height: 300px; object-fit: cover; width: 100%;">
-                                                @endif
-
-                                                {{-- 料金の表示 --}}
-                                                <p class="fs-3 fw-bold mt-3">料金: ¥{{ number_format($room->price) }}</p>
-
-                                                {{-- 空室表示+ 残り部屋数(横並び) --}}
-                                                <div class="d-flex justify-content-between align-items-center">
-
-                                                    {{-- 部屋選択ラジオボタン --}}
-                                                    <div class="form-check d-flex align-items-center">
-                                                        <input class="form-check-input" type="radio" name="room_id"
-                                                            value="{{ $room->id }}"
-                                                            {{ !$room->available ? 'disabled' : '' }}
-                                                            data-price="{{ $room->price }}" onchange="enableReserveBtn()"
-                                                            style="transform: scale(1.8); margin-right:0.6rem;">
-                                                        <label class="form-check-label fs-2 fw-bold mb-0">
-                                                            {{ $room->available ? '空室有り' : '満室' }}
-                                                        </label>
-                                                    </div>
-                                                    {{-- 残り部屋数 --}}
-                                                    <span class="fs-4 fw-bold text-secondary">
-                                                        {{ $room->remaining_rooms }} / {{ $room->total_rooms }}
-                                                    </span>
-
-                                                </div>
-                                            </div>
+                                    <img src="{{ $room->images->first()?->image_url ?? asset('images/no-image.png') }}" alt="Room">
+                                    <div class="card-body">
+                                        <div class="room-title">{{ $room->type_name }}</div>
+                                        <div class="room-desc">
+                                            <i class="fas fa-user-friends me-1"></i> 定員：{{ $room->capacity }}名<br>
+                                            {{ \Illuminate\Support\Str::limit($room->description, 40) }}
+                                        </div>
+                                        <div class="mt-auto d-flex justify-content-between align-items-center">
+                                            <div class="room-price">¥{{ number_format($room->price) }} <small class="text-muted">~</small></div>
+                                            @if(!$room->available)
+                                            <span class="badge bg-secondary">満室</span>
+                                            @else
+                                            <span class="small text-success"><i class="fas fa-check"></i> 選択可能</span>
+                                            @endif
                                         </div>
                                     </div>
+                                </div>
                                 @endforeach
+                            </div>
+
+                            {{-- 動的詳細表示エリア --}}
+                            <div id="detailSection" class="card-modern detail-view d-none">
+                                <div class="row">
+                                    <div class="col-md-7">
+                                        <div class="mb-3">
+                                            <img id="room_image" src="" alt="Room" class="img-fluid w-100 shadow-sm" style="height: 350px; object-fit: cover;">
+                                        </div>
+                                        <div id="room_thumbnails" class="thumb-gallery d-flex gap-2 overflow-x-auto"></div>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <h3 id="room_name" class="h4 mb-3" style="color: var(--ryokan-deep-green);"></h3>
+                                        <div class="d-flex gap-4 mb-4 pb-3 border-bottom border-light">
+                                            <div><small class="text-muted d-block">定員</small><span class="fw-bold"><span id="room_capacity"></span>名</span></div>
+                                            <div><small class="text-muted d-block">料金（1泊）</small><span class="fw-bold text-primary" id="room_price"></span></div>
+                                        </div>
+                                        <p id="room_description" class="text-muted small mb-4" style="white-space: pre-wrap;"></p>
+                                        <div class="p-3 bg-light border-start border-4 border-success small text-muted">
+                                            <i class="fas fa-info-circle me-1"></i> チェックイン 15:00 / チェックアウト 11:00
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </form>
             </div>
 
-            <!-- 予約一覧 -->
-            <div class="tab-pane fade" id="list" role="tabpanel" aria-labelledby="list-tab">
+            {{-- 2. 予約状況の確認タブ --}}
+            <div class="tab-pane fade {{ $showListTab ? 'show active' : '' }}" id="list" role="tabpanel">
+                <div class="card-modern p-4">
 
-
-                <div class="container">
-
-                    <div class="card shadow-lg border-0 mb-5">
-                        <div class="card-header bg-gradient text-black"
-                            style="background: linear-gradient(to right, #3c2f2f, #5a4635);">
-                            <h3 class="mb-0"><i class="fas fa-list me-2"></i> ご予約一覧</h3>
-                        </div>
-                        <div class="card-body p-4">
-
-                            @if ($reservations->isEmpty())
-                                <p>現在、予約はありません。</p>
-                            @else
-                                <table class="table table-bordered table-hover align-middle text-center">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th><i class="fas fa-id-badge me-1 text-secondary"></i> 予約ID</th>
-                                            <th><i class="fas fa-bed me-1 text-secondary"></i> 部屋タイプ</th>
-                                            <th><i class="fas fa-calendar-alt me-1 text-secondary"></i> チェックイン</th>
-                                            <th><i class="fas fa-user-friends me-1 text-secondary"></i> 人数</th>
-                                            <th><i class="fas fa-yen-sign me-1 text-secondary"></i> 金額</th>
-                                            <th><i class="fas fa-info-circle me-1 text-secondary"></i> ステータス</th>
-                                            <th><i class="fas fa-cogs me-1 text-secondary"></i> 操作</th>
-                                        </tr>
-                                    </thead>
-
-                                    <tbody>
-                                        @foreach ($reservations as $reservation)
-                                            <tr>
-                                                <td>booking-{{ $reservation->id }}</td>
-                                                <td>{{ $reservation->room->type_name }}</td>
-                                                <td>{{ $reservation->check_in->format('Y-m-d') }}</td>
-                                                <td>{{ $reservation->guests }}名</td>
-                                                <td>¥{{ number_format($reservation->total_price) }}</td>
-                                                <td>
-                                                    @if ($reservation->status === 'confirmed')
-                                                        @if ($reservation->check_in->isPast() && !$reservation->check_in->isToday())
-                                                            {{-- 昨日より前の場合のみ「宿泊済み」 --}}
-                                                            <span class="text-gray-500 italic">宿泊済み</span>
-                                                        @elseif($reservation->check_in->isToday())
-                                                            {{-- 今日の場合は「確定」のまま（または「本日宿泊」） --}}
-                                                            <span class="text-green-600 font-bold">確定（本日宿泊）</span>
-                                                        @else
-                                                            {{-- 明日以降 --}}
-                                                            <span class="text-green-600 font-bold">確定</span>
-                                                        @endif
-                                                    @else
-                                                        <span class="text-red-600">キャンセル済み</span>
-                                                    @endif
-                                                </td>
-                                                <td>
-                                                    {{-- キャンセルボタンの条件：ステータスが確定 且つ チェックインが「明日以降 --}}
-                                                    @if ($reservation->status === 'confirmed' && $reservation->check_in->isAfter(now()->endOfDay()))
-                                                        <form action="{{ route('booking.cancel', $reservation->id) }}"
-                                                            method="POST">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                            <button type="submit"
-                                                                onclick="return confirm('本当にキャンセルしますか？')"
-                                                                class="btn btn-danger btn-sm">
-                                                                キャンセル
-                                                            </button>
-                                                        </form>
-                                                    @endif
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-
-                                </table>
-                            @endif
-
+                    {{-- 【修正】session('booking') がある時だけ、予約完了を表示 --}}
+                    @if(session('booking'))
+                    <div class="alert alert-ryokan p-4 mb-5 animate__animated animate__fadeIn">
+                        <div class="row align-items-center">
+                            <div class="col-md-1 text-center mb-3 mb-md-0"><i class="fas fa-check-circle fa-3x text-success"></i></div>
+                            <div class="col-md-8">
+                                <h4 class="h5 fw-bold mb-1" style="color: var(--ryokan-deep-green);">ご予約を承りました</h4>
+                                <p class="mb-0 text-muted small">
+                                    予約番号: <strong>#{{ session('booking.id') }}</strong> |
+                                    お部屋: {{ session('booking.room_name') }}
+                                </p>
+                            </div>
+                            <div class="col-md-3 text-md-end">
+                                <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="alert">閉じる</button>
+                            </div>
                         </div>
                     </div>
-                </div>
+                    @endif
 
-            </div>
-        </div>
-
-    </div>
-
-@endsection
-<!-- 予約完了モーダル -->
-@if (session('booking'))
-    <div class="modal fade show" id="bookingCompleteModal" tabindex="-1" aria-labelledby="bookingCompleteLabel"
-        aria-hidden="true" style="display:block;">
-        <div class="modal-dialog ,mofsl-lg">
-            <div class="modal-content" style="boder-radius: 15px; overflow: hidden;">
-
-                <!-- ゴールドグラデーションヘッダー -->
-                <div class="modal-header text-white" style="background: linear-gradient(90deg, #8b4513, #d4af37);">
-                    <h4 class="modal-title" id="bookingCompleteLabel">
-                        <i class="fas fa-check-circle me-2"></i>予約が完了しました！
-                    </h4>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="閉じる"></button>
-                </div>
-
-                <!-- モーダル本文 -->
-                <div class="modal-body" style="background-color: #fffaf0;">
-
-                    <!-- 上部メッセージ -->
-                    <div class="text-center mb-4">
-                        <h5 class="fw-bold text-dark">ご予約ありがとうございます。</h5>
-                        <p class="text-secondary">以下の内容で予約が確定しました。ご来館を心よりお待ちしております。</p>
+                    {{-- 【修正】session('booking_success') がある時だけ、キャンセル完了を表示 --}}
+                    {{-- かつ、bookingセッションがないことを条件に加えることで二重表示を防止 --}}
+                    @if(session('booking_success') && !session('booking'))
+                    <div class="alert alert-ryokan alert-ryokan-cancel p-4 mb-5 animate__animated animate__fadeIn">
+                        <div class="row align-items-center">
+                            <div class="col-md-1 text-center mb-3 mb-md-0"><i class="fas fa-info-circle fa-3x text-danger"></i></div>
+                            <div class="col-md-8">
+                                <h4 class="h5 fw-bold mb-1 text-danger">キャンセルが完了しました</h4>
+                                <p class="mb-0 text-muted small">{{ session('booking_success') }}</p>
+                            </div>
+                            <div class="col-md-3 text-md-end">
+                                <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="alert">閉じる</button>
+                            </div>
+                        </div>
                     </div>
-                    <p class="mb-2"><strong class="text-dark">予約ID:</strong>
-                        <span class="ms-2">booking-{{ session('booking.id') }}</span>
-                    </p>
-                    <p class="mb-2"><strong class="text-dark"><strong>部屋タイプ:</strong>
-                            <span class="ms-2">{{ session('booking.room_name') }}</span>
-                    </p>
-                    <p class="mb-2"><strong class="text-dark"><strong>チェックイン:</strong>
-                            <span class="ms-2">{{ session('booking.check_in') }}</span>
-                    </p>
-                    <p class="mb-2"><strong class="text-dark"><strong>チェックアウト:</strong>
-                            <span class="ms-2">{{ session('booking.check_out_date') }}</span>
-                    </p>
-                    <p class="mb-2"><strong class="text-dark"><strong>人数:</strong>
-                            <span class="ms-2">{{ session('booking.guests') }}名</p>
-                    <p class="mb-0"><strong class="text-dark"><strong>料金:</strong>
-                            <span
-                                class="ms-2 fs-4 fw-bold text-danger">¥{{ number_format(session('booking.total_price')) }}</span>
-                    </p>
+                    @endif
+                    
+                    {{-- 予約リストテーブル --}}
+                    @if ($reservations->isEmpty())
+                    <div class="text-center py-5">
+                        <p class="text-muted">現在、予約履歴はございません。</p>
+                    </div>
+                    @else
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr class="small text-muted">
+                                    <th>予約ID</th>
+                                    <th>お部屋</th>
+                                    <th>宿泊日</th>
+                                    <th>人数</th>
+                                    <th>合計金額</th>
+                                    <th>状況</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($reservations as $reservation)
+                                <tr>
+                                    <td class="small">#{{ $reservation->id }}</td>
+                                    <td class="fw-bold">{{ $reservation->room->type_name }}</td>
+                                    <td>{{ $reservation->check_in->format('Y/m/d') }}</td>
+                                    <td>{{ $reservation->guests }}名</td>
+                                    <td>¥{{ number_format($reservation->total_price) }}</td>
+                                    <td>
+                                        @if ($reservation->status === 'confirmed')
+                                        <span class="badge bg-success-subtle text-success px-3">予約確定</span>
+                                        @else
+                                        <span class="badge bg-danger-subtle text-danger px-3">キャンセル済み</span>
+                                        @endif
+                                    </td>
+                                    <td class="text-end">
+                                        @if ($reservation->status === 'confirmed' && $reservation->check_in->isAfter(now()->endOfDay()))
+                                        <form action="{{ route('booking.cancel', $reservation->id) }}" method="POST" class="d-inline">
+                                            @csrf @method('DELETE')
+                                            <button type="submit" class="btn btn-outline-danger btn-sm px-3" onclick="return confirm('本当にキャンセルしますか？')">取消</button>
+                                        </form>
+                                        @endif
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    @endif
                 </div>
-            </div>
-
-            <!-- モーダルのフッター -->
-            <div class="modal-footer" style="background-color: #fffaf0;">
-                <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">閉じる</button>
             </div>
         </div>
     </div>
-    </div>
-@endif
 
-<!-- モーダルの自動表示用スクリプト -->
-@if (session('booking'))
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            var bookingModal = document.getElementById('bookingCompleteModal');
-            var modal = new bootstrap.Modal(bookingModal);
-            modal.show();
-        });
-    </script>
-@endif
+            // 予約またはキャンセル直後、メッセージが見える位置へ自動スクロール
+            @if($showListTab)
+            const tabsElement = document.getElementById('bookingTabs');
+            tabsElement.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+            @endif
 
-{{-- JavaScriptで予約ボタンを有効化＋文字色変更 --}}
-<script>
-    function enableReserveBtn() {
-        const btn = document.getElementById('reserveBtn');
-        btn.disabled = false; // ボタンを有効化
-        btn.classList.remove('text-white'); // 白文字を削除
-        btn.classList.add('text-black'); // 黒文字を追加
-    }
-</script>
+            const reserveBtn = document.getElementById('reserveBtn');
+            const totalPrice = document.getElementById('totalPrice');
+            const roomCards = document.querySelectorAll('.room-card');
+            const detailSection = document.getElementById('detailSection');
 
-{{-- JavaScriptで合計金額を反映させる --}}
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        function updateTotalPrice() {
-            let basePrice = 0;
+            function selectRoom(card) {
+                if (card.dataset.available === "0") return;
 
-            // 選択された部屋の料金を取得
-            const selectedRoom = document.querySelector('[name="room_id"]:checked');
-            if (selectedRoom) {
-                basePrice = parseInt(selectedRoom.dataset.price);
+                roomCards.forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+
+                const price = parseInt(card.dataset.price);
+                const name = card.dataset.name;
+                const description = card.dataset.description;
+                const capacity = card.dataset.capacity;
+                const roomId = card.dataset.roomId;
+                const images = JSON.parse(card.dataset.images);
+
+                totalPrice.textContent = '¥' + price.toLocaleString();
+                reserveBtn.disabled = false;
+                document.getElementById('room_id').value = roomId;
+
+                detailSection.classList.remove('d-none');
+                document.getElementById('room_name').textContent = name;
+                document.getElementById('room_price').textContent = '¥' + price.toLocaleString();
+                document.getElementById('room_description').textContent = description;
+                document.getElementById('room_capacity').textContent = capacity;
+
+                const mainImg = document.getElementById('room_image');
+                mainImg.src = images.length > 0 ? images[0] : "{{ asset('images/no-image.png') }}";
+
+                const thumbContainer = document.getElementById('room_thumbnails');
+                thumbContainer.innerHTML = '';
+
+                if (images.length > 1) {
+                    images.forEach((imgUrl, index) => {
+                        const thumb = document.createElement('img');
+                        thumb.src = imgUrl;
+                        thumb.classList.add('rounded');
+                        if (index === 0) thumb.classList.add('active');
+                        thumb.addEventListener('click', function() {
+                            mainImg.src = imgUrl;
+                            thumbContainer.querySelectorAll('img').forEach(i => i.classList.remove('active'));
+                            thumb.classList.add('active');
+                        });
+                        thumbContainer.appendChild(thumb);
+                    });
+                }
             }
 
-            // 合計金額を反映
-            document.getElementById('totalPrice').textContent = '¥' + basePrice.toLocaleString();
-        }
+            roomCards.forEach(card => card.addEventListener('click', () => selectRoom(card)));
 
-        // イベントリスナー
-        document.querySelectorAll('[name="room_id"], [name="guest_count"]').forEach(el => {
-            el.addEventListener('change', updateTotalPrice);
+            // 完了通知がない場合のみ、最初の部屋を自動選択
+            @if(!$showListTab)
+            const firstAvailable = Array.from(roomCards).find(c => c.dataset.available === "1");
+            if (firstAvailable) firstAvailable.click();
+            @endif
         });
-    });
-</script>
+    </script>
+</body>
+
+</html>
