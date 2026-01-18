@@ -25,68 +25,74 @@ use App\Http\Controllers\SimpleLoginController;
 |
 */
 
-// サイトのトップページ (http://your-domain.com/) にアクセスした時に index.blade.php を表示
+
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+*/
+
+// --- 1. トップページ (LP) ---
 Route::get('/', function () {
     return view('index');
-});
+})->name('home');
 
 /*========================================
  ユーザー
  =======================================*/
 
 // --- login ---
-// アカウント登録
 Route::get('/register', [RegisterController::class, 'show'])->name('register.form');
 Route::post('/register', [RegisterController::class, 'register'])->name('register.submit');
 
-// ユーザーログイン
-Route::get('/login', [UserLoginController::class, 'show'])->name('user.login.form');
+// ユーザーログイン (2つの名前で定義してエラーを防止)
+Route::get('/login', [UserLoginController::class, 'show'])
+    ->name('user.login.form')
+    ->name('login');
 Route::post('/login', [UserLoginController::class, 'login'])->name('user.login');
 
-//// ログイン後の仮画面表示
+// ログイン後の仮画面表示
 Route::get('/user/dashboard', function () {
     if (!session()->has('user')) {
-        return redirect('/login');
+        return redirect()->route('user.login.form');
     }
-
     return view('user.dashboard');
 });
 
-//// ログアウト処理（仮）
-Route::post('/user/logout', function () {
-    session()->flush(); // 全セッションを削除
-    return redirect('/login');
-})->name('user.logout');
+// --- 予約システム ---
 
+// 【修正】予約フォーム表示：手動でログインチェックを行い、未ログインならログイン画面へ
+// 予約フォーム表示（手動チェック）
+Route::get('/booking/create', function () {
+    if (!session()->has('user')) {
+        // 名前を使わず、URLで直接ログイン画面へ
+        return redirect('/login');
+    }
+    return app(App\Http\Controllers\BookingController::class)->create(request());
+})->name('booking.create');
 
-// 予約一覧表示（タブの「予約一覧」で利用）
-Route::get('/booking', [BookingController::class, 'index'])
-    ->name('booking.index');
+// 予約一覧
+Route::get('/booking', [BookingController::class, 'index'])->name('booking.index');
 
-// 予約フォーム＋一覧（タブ切り替え）
-// /bookingから/booking/create に修正しました。
-Route::get('/booking/create', [BookingController::class, 'create'])
-    ->middleware('auth')
-    ->name('booking.create');
-
-// 予約保存（フォーム送信）
+// 予約保存
 Route::post('/booking/store', [BookingController::class, 'store'])->name('booking.store');
 
-// 予約キャンセル（一覧からキャンセルボタンを押したとき）
+// 予約キャンセル
 Route::delete('/booking/{id}/cancel', [BookingController::class, 'cancel'])->name('booking.cancel');
 
-// 予約完了画面の表示
+// 予約完了
 Route::get('/booking/complete', [BookingController::class, 'complete'])->name('booking.complete');
 
 // 会員管理
 Route::get('/member/dashboard', [MemberController::class, 'dashboard'])->name('member.dashboard');
 
-// ログアウト処理
+// 【修正】共通ログアウト処理：セッションをクリアしてLPへリダイレクト
 Route::post('/logout', function () {
     Auth::logout();
     request()->session()->invalidate();
     request()->session()->regenerateToken();
-    return redirect('/login'); // ログアウト後のリダイレクト先
+    session()->flush(); // 手作りセッションも削除
+    return redirect()->route('home'); // LPに戻る
 })->name('logout');
 
 

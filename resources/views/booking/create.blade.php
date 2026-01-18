@@ -198,10 +198,29 @@
             margin-bottom: 20px;
         }
 
-        .btn-logout {
+        /* ログアウトボタン：ホバーで色を少し薄くする設定 */
+        .btn-ryokan-logout {
+            background-color: var(--ryokan-deep-green);
+            color: #fff;
+            border: none;
+            /* 枠線を消してスッキリさせます */
             font-family: 'Noto Sans JP', sans-serif;
             font-size: 0.8rem;
-            letter-spacing: 0.05em;
+            transition: background-color 0.3s ease;
+            /* 色の変化を滑らかに */
+        }
+
+        .btn-ryokan-logout:hover {
+            /* ホバー時に「ryokan-light-green」へ変化させる */
+            background-color: var(--ryokan-light-green);
+            color: #fff;
+        }
+
+        .btn-outline-secondary {
+            font-family: 'Noto Sans JP', sans-serif;
+            font-size: 0.8rem;
+            border-color: #ccc;
+            color: #666;
         }
     </style>
 </head>
@@ -212,17 +231,32 @@
         {{-- ヘッダー部分 --}}
         <div class="d-flex justify-content-between align-items-end mb-5">
             <div>
+                @if(session('user'))
+                <span class="text-uppercase small tracking-widest text-muted mb-2 d-block">
+                    <i class="fas fa-user-circle me-1"></i> {{ session('user')['name'] }} 様 ようこそ
+                </span>
+                @else
                 <span class="text-uppercase small tracking-widest text-muted mb-2 d-block">Reservation</span>
-                <h2 class="mb-0">宿泊予約</h2>
+                @endif
+                <h2 class="mb-0"><i class="fas fa-tree"></i> 常磐ノ杜　宿泊予約</h2>
             </div>
-            <form action="{{ route('logout') }}" method="POST">
-                @csrf
-                <button type="submit" class="btn btn-link text-secondary btn-logout text-decoration-none">
-                    <i class="fas fa-sign-out-alt me-1"></i> LOGOUT
-                </button>
-            </form>
-        </div>
 
+            {{-- 右側のボタンエリア --}}
+            <div class="d-flex gap-3 align-items-center">
+                {{-- TOPに戻るボタン --}}
+                <a href="{{ route('home') }}" class="btn btn-outline-secondary btn-sm rounded-0 px-3">
+                    <i class="fas fa-home me-1"></i> TOP
+                </a>
+
+                {{-- ログアウトボタン（色をグリーンに） --}}
+                <form action="{{ route('logout') }}" method="POST" class="m-0">
+                    @csrf
+                    <button type="submit" class="btn btn-ryokan-logout btn-sm rounded-0 px-3">
+                        <i class="fas fa-sign-out-alt me-1"></i> LOGOUT
+                    </button>
+                </form>
+            </div>
+        </div>
         {{-- タブ制御ロジック：予約(booking) または キャンセル(booking_success) があれば「予約状況」を表示 --}}
         @php
         $showListTab = session('booking') || session('booking_success');
@@ -381,7 +415,7 @@
                         </div>
                     </div>
                     @endif
-                    
+
                     {{-- 予約リストテーブル --}}
                     @if ($reservations->isEmpty())
                     <div class="text-center py-5">
