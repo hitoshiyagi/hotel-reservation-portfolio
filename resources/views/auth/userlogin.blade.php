@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>ログイン | 高級旅館予約システム</title>
+    <title>常磐ノ杜｜ログイン</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     {{-- Bootstrap & Google Fonts --}}
