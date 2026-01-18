@@ -158,7 +158,7 @@
     <div class="register-card">
         <div class="brand-section">
             <i class="fas fa-hotel"></i>
-            <h1>アカウント作成</h1>
+            <h1><i class="fas fa-tree"></i> 常磐ノ杜　アカウント作成</h1>
             <p>ご登録後、すぐにご予約いただけます</p>
         </div>
 

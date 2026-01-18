@@ -158,8 +158,7 @@
 
     <div class="login-card">
         <div class="login-brand">
-            <i class="fas fa-hotel"></i>
-            <h1>一泊限定 高級宿泊予約</h1>
+            <h1><i class="fas fa-tree"></i> 常磐ノ杜　ログイン</h1>
         </div>
 
         {{-- エラー表示 --}}
