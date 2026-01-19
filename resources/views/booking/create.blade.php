@@ -233,7 +233,7 @@
             <div>
                 @if(session('user'))
                 <span class="text-uppercase small tracking-widest text-muted mb-2 d-block">
-                    <i class="fas fa-user-circle me-1"></i> {{ session('user')['name'] }} 様 ようこそ
+                    <i class="fas fa-user-circle me-1"></i>ようこそ　 {{ session('user')['name'] }} 様
                 </span>
                 @else
                 <span class="text-uppercase small tracking-widest text-muted mb-2 d-block">Reservation</span>

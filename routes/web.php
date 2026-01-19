@@ -41,23 +41,18 @@ Route::get('/', function () {
  ユーザー
  =======================================*/
 
-// --- login ---
+// --- 新規登録 ---
 Route::get('/register', [RegisterController::class, 'show'])->name('register.form');
 Route::post('/register', [RegisterController::class, 'register'])->name('register.submit');
 
-// ユーザーログイン (2つの名前で定義してエラーを防止)
-Route::get('/login', [UserLoginController::class, 'show'])
-    ->name('user.login.form')
-    ->name('login');
+// --- ログイン ---
+// 名前は1つに絞ります。どちらを使ってもいいですが、まずは 'login' に統一
+Route::get('/login', [UserLoginController::class, 'show'])->name('login');
 Route::post('/login', [UserLoginController::class, 'login'])->name('user.login');
 
-// ログイン後の仮画面表示
-Route::get('/user/dashboard', function () {
-    if (!session()->has('user')) {
-        return redirect()->route('user.login.form');
-    }
-    return view('user.dashboard');
-});
+// 他の場所で 'user.login.form' という名前を使いたい場合は、
+// Redirectで 'login' を呼ぶように修正すればOKです。
+
 
 // --- 予約システム ---
 

@@ -38,6 +38,6 @@ class RegisterController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        return redirect()->route('user.login.form')->with('success', '登録完了');
+        return redirect()->route('booking.create')->with('success', '登録完了');
     }
 }

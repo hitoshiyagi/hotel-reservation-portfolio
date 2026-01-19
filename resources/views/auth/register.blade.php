@@ -157,7 +157,6 @@
 
     <div class="register-card">
         <div class="brand-section">
-            <i class="fas fa-hotel"></i>
             <h1><i class="fas fa-tree"></i> 常磐ノ杜　アカウント作成</h1>
             <p>ご登録後、すぐにご予約いただけます</p>
         </div>
@@ -210,7 +209,7 @@
 
         <div class="login-link">
             <p class="text-muted mb-0">すでにアカウントをお持ちの方は<br>
-                <a href="{{ route('user.login.form') }}">こちらのログインページへ</a>
+                <a href="{{ route('booking.create') }}">こちらのログインページへ</a>
             </p>
         </div>
     </div>
